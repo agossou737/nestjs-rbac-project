@@ -1,0 +1,33 @@
+/*
+ * Access Manager override of the ASIN theme (derogation ADR 0001): palette and font imposed by the brief.
+ * Contrast checked: #111827 on #F8FAFC 16.9:1, #64748B on #F8FAFC 4.6:1, white on #2563EB 5.2:1.
+ * --input keeps the ASIN value so form boundaries stay at 3:1; #E2E8F0 is for surfaces only.
+ */
+:root {
+  --background: #f8fafc;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #111827;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eff6ff;
+  --accent-foreground: #1e40af;
+  --border: #e2e8f0;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #1e40af;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2563eb;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+}

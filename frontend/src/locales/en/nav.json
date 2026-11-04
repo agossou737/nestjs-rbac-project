@@ -1,0 +1,16 @@
+{
+  "toggle_sidebar": "[en] Afficher ou masquer le menu",
+  "groups": {
+    "overview": "[en] Pilotage",
+    "access": "[en] Gestion des accès",
+    "audit": "[en] Traçabilité"
+  },
+  "items": {
+    "dashboard": "[en] Tableau de bord",
+    "users": "[en] Utilisateurs",
+    "roles": "[en] Rôles",
+    "permissions": "[en] Permissions",
+    "activity_logs": "[en] Journal d'activité",
+    "login_history": "[en] Historique des connexions"
+  }
+}

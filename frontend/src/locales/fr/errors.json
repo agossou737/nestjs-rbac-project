@@ -1,0 +1,12 @@
+{
+  "required": "Ce champ est obligatoire.",
+  "summary_title": "Corrigez les champs suivants",
+  "network": "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez.",
+  "format": {
+    "email": "Saisissez une adresse e-mail valide, par exemple nom@asin.bj."
+  },
+  "file": {
+    "type": "Format non accepté : PDF, JPEG ou PNG uniquement.",
+    "size": "Le fichier dépasse 5 Mo."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "toggle_sidebar": "Afficher ou masquer le menu",
+  "groups": {
+    "overview": "Pilotage",
+    "access": "Gestion des accès",
+    "audit": "Traçabilité"
+  },
+  "items": {
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "roles": "Rôles",
+    "permissions": "Permissions",
+    "activity_logs": "Journal d'activité",
+    "login_history": "Historique des connexions"
+  }
+}
