@@ -17,6 +17,7 @@ Le cahier des charges d'Access Manager impose une stack qui diverge de la stack 
 | BE-4 zod | class-validator / class-transformer (ValidationPipe global, whitelist) |
 | BE-2 pagination par curseur | `{ items, total, page, page_size }` ; snake_case et ISO 8601 conservés |
 | Thème #4471C4 | Primaire #2563EB, police Inter auto-hébergée |
+| Jest (cahier des charges) | Vitest + Supertest : NestJS 12 est en ESM et le fournit par défaut ; même API que Jest |
 | Tests en phase 9 | Refusé : TDD dans chaque phase, la phase 9 complète la couverture |
 
 ## Conséquences

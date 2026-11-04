@@ -4,10 +4,11 @@ Project CLAUDE.md. The asin-harness rules are the floor; this file may add or ti
 
 ## Stack
 - Monorepo: `frontend/` (React + TypeScript + Vite) and `backend/` (NestJS + TypeScript)
-- Database: MySQL 8 with Prisma Migrate (derogation: PostgreSQL)
+- Backend: NestJS 12 (ESM)
+- Database: MySQL 8 with Prisma 7 and Prisma Migrate (derogation: PostgreSQL)
 - Identity: local auth, Passport + JWT access token, rotating refresh token in an HttpOnly cookie (derogation: Keycloak)
 - Build command: `npm run build` in each package
-- Test command: `npm test` and `npm run test:e2e` in `backend/`
+- Test command: `npm test` (Vitest) and `npm run test:e2e` (Vitest + Supertest) in `backend/`; Vitest replaces Jest (ADR 0001)
 - registry: none yet (local docker-compose only)
 
 ## Front
