@@ -1,0 +1,26 @@
+# Local development stack. Production images go through Harbor (ASIN rule); this file is for workstations only.
+name: access-manager
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-access_manager}
+      MYSQL_USER: ${MYSQL_USER:-access_manager}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3310}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-data:
