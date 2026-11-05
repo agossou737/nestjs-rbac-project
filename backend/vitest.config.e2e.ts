@@ -6,6 +6,8 @@ const testEnv = config({ path: '.env.test', override: true, quiet: true }).parse
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
+  // Nest DI and class-transformer read design:type metadata, which oxc only emits on request.
+  oxc: { decorator: { legacy: true, emitDecoratorMetadata: true } },
   test: {
     globals: true,
     root: './',
