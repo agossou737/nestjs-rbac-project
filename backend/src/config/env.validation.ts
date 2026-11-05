@@ -1,5 +1,5 @@
 import { plainToInstance, Transform } from 'class-transformer';
-import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsString, Max, Min, MinLength, validateSync } from 'class-validator';
+import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsString, Matches, Max, Min, MinLength, validateSync } from 'class-validator';
 
 const toBoolean = ({ value }: { value: unknown }) => value === true || value === 'true';
 
@@ -19,7 +19,8 @@ export class EnvironmentVariables {
   @IsString() @IsNotEmpty()
   APP_URL!: string;
 
-  @IsString() @MinLength(32)
+  // 256 bits at least (64 hex or 43 base64 characters), and never the placeholder of .env.example.
+  @IsString() @MinLength(43) @Matches(/^(?!change-me)/, { message: 'JWT_ACCESS_SECRET still holds the .env.example placeholder' })
   JWT_ACCESS_SECRET!: string;
 
   @IsInt() @Min(60) @Max(3600)
@@ -36,6 +37,10 @@ export class EnvironmentVariables {
 
   @IsInt() @Min(1)
   LOGIN_LOCK_MINUTES: number = 15;
+
+  // Failures on one account from all IPs together before the whole account locks (distributed attack).
+  @IsInt() @Min(1)
+  LOGIN_ACCOUNT_MAX_ATTEMPTS: number = 50;
 
   @IsInt() @Min(1)
   AUTH_THROTTLE_LIMIT: number = 10;
@@ -54,6 +59,26 @@ export class EnvironmentVariables {
 
   @IsString() @IsNotEmpty()
   MAIL_FROM!: string;
+
+  @Transform(toBoolean) @IsBoolean()
+  SMTP_SECURE: boolean = false;
+
+  // STARTTLS required: reset links must not cross the network in clear text outside a workstation.
+  @Transform(toBoolean) @IsBoolean()
+  SMTP_REQUIRE_TLS: boolean = false;
+
+  @IsIn(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+  LOG_LEVEL: string = 'info';
+
+  @IsInt() @Min(1)
+  GLOBAL_THROTTLE_LIMIT: number = 300;
+
+  // Express "trust proxy": false, a hop count (1 behind one ingress) or a list of proxy addresses.
+  @IsString() @IsNotEmpty()
+  TRUST_PROXY: string = 'false';
+
+  @Transform(toBoolean) @IsBoolean()
+  SWAGGER_ENABLED: boolean = true;
 }
 
 export function validateEnv(config: Record<string, unknown>): EnvironmentVariables {

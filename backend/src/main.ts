@@ -6,9 +6,11 @@ import { configureApp } from './configure-app.js';
 import { buildOpenApiDocument } from './openapi.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
   configureApp(app);
-  SwaggerModule.setup('api/docs', app, buildOpenApiDocument(app));
+  if (app.get(ConfigService).getOrThrow<boolean>('SWAGGER_ENABLED')) {
+    SwaggerModule.setup('api/docs', app, buildOpenApiDocument(app));
+  }
   await app.listen(app.get(ConfigService).getOrThrow<number>('PORT'));
 }
 await bootstrap();

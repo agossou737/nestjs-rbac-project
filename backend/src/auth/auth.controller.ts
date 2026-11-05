@@ -1,7 +1,7 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiCookieAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { CredentialRateLimit } from '../common/credential-rate-limit.js';
 import type { CookieOptions, Request, Response } from 'express';
 import { Authenticated } from '../rbac/permissions.decorator.js';
 import { AuthService } from './auth.service.js';
@@ -30,7 +30,7 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(ThrottlerGuard)
+  @CredentialRateLimit()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: TokenResponseDto })
@@ -57,7 +57,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiCookieAuth(REFRESH_COOKIE)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<void> {
-    await this.auth.logout(refreshCookie(req));
+    await this.auth.logout(refreshCookie(req), clientInfo(req));
     res.clearCookie(REFRESH_COOKIE, this.cookieBase);
   }
 
@@ -70,7 +70,7 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(ThrottlerGuard)
+  @CredentialRateLimit()
   @Post('forgot-password')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOkResponse({ type: MessageDto })
@@ -80,11 +80,11 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(ThrottlerGuard)
+  @CredentialRateLimit()
   @Post('reset-password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
-    await this.auth.resetPassword(dto.token, dto.password);
+  async resetPassword(@Body() dto: ResetPasswordDto, @Req() req: Request): Promise<void> {
+    await this.auth.resetPassword(dto.token, dto.password, clientInfo(req));
   }
 
   private setRefreshCookie(res: Response, refresh: IssuedRefreshToken): void {

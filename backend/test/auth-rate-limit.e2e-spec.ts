@@ -4,6 +4,7 @@ import { createTestApp, type TestApp } from './utils/test-app.js';
 // ConfigModule reads the environment once, when AppModule is imported: set the limit before any import.
 vi.hoisted(() => {
   process.env.AUTH_THROTTLE_LIMIT = '3';
+  process.env.GLOBAL_THROTTLE_LIMIT = '20';
 });
 
 describe('Authentication rate limiting (e2e)', () => {
@@ -27,5 +28,12 @@ describe('Authentication rate limiting (e2e)', () => {
     const blocked = await attempt().expect(429);
     expect(blocked.headers['content-type']).toMatch(/application\/problem\+json/);
     expect(blocked.body).toMatchObject({ status: 429, title: 'Too Many Requests' });
+  });
+
+  it('applies a global per-IP limit to every route, not only the credential ones', async () => {
+    const statuses: number[] = [];
+    for (let i = 0; i < 25; i++) statuses.push((await request(ctx.app.getHttpServer()).get('/api/v1/auth/me')).status);
+    expect(statuses).toContain(429);
+    expect(statuses.filter((status) => status === 401).length).toBeLessThanOrEqual(20);
   });
 });

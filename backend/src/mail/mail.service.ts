@@ -14,7 +14,8 @@ export class MailService {
     this.transporter = createTransport({
       host: config.getOrThrow<string>('SMTP_HOST'),
       port: config.getOrThrow<number>('SMTP_PORT'),
-      secure: false,
+      secure: config.getOrThrow<boolean>('SMTP_SECURE'),
+      requireTLS: config.getOrThrow<boolean>('SMTP_REQUIRE_TLS'),
       connectionTimeout: 5_000,
       greetingTimeout: 5_000,
       socketTimeout: 10_000,

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import request from 'supertest';
 import { seedDatabase } from '../prisma/seed-database.js';
+import { AuthService } from '../src/auth/auth.service.js';
 import { resetDatabase } from './utils/reset-database.js';
 import {
   DEFAULT_PASSWORD,
@@ -105,19 +106,52 @@ describe('Authentication (e2e)', () => {
       await login('dave@example.test').expect(401);
     });
 
-    it('locks the account after five failures, even with the right password, then unlocks it', async () => {
-      const user = await createUser(ctx.prisma, { email: 'erin@example.test' });
-      for (let i = 0; i < 5; i++) await login('erin@example.test', 'Wrong-Password-1').expect(401);
+    describe('brute force (lockout per account and IP)', () => {
+      const viaService = (email: string, password: string, ip: string) =>
+        ctx.app.get(AuthService).login(email, password, { ipAddress: ip, userAgent: 'test' });
 
-      await login('erin@example.test').expect(401);
-      const locked = await ctx.prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-      expect(locked.lockedUntil!.getTime()).toBeGreaterThan(Date.now());
+      it('blocks an IP after five failures on an account, even with the right password, while other IPs still sign in', async () => {
+        await createUser(ctx.prisma, { email: 'erin@example.test' });
+        for (let i = 0; i < 5; i++) await login('erin@example.test', 'Wrong-Password-1').expect(401);
 
-      await ctx.prisma.user.update({ where: { id: user.id }, data: { lockedUntil: new Date(Date.now() - 1000) } });
-      await login('erin@example.test').expect(200);
-      const unlocked = await ctx.prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-      expect(unlocked.failedLoginCount).toBe(0);
-      expect(unlocked.lockedUntil).toBeNull();
+        await login('erin@example.test').expect(401);
+        const blocked = await ctx.prisma.loginHistory.findFirstOrThrow({ where: { email: 'erin@example.test' }, orderBy: { createdAt: 'desc' } });
+        expect(blocked.outcome).toBe('ACCOUNT_LOCKED');
+
+        await expect(viaService('erin@example.test', DEFAULT_PASSWORD, '10.20.30.40')).resolves.toBeDefined();
+      });
+
+      it('lifts the IP block once the failures leave the 15-minute window', async () => {
+        await createUser(ctx.prisma, { email: 'fay@example.test' });
+        for (let i = 0; i < 5; i++) await login('fay@example.test', 'Wrong-Password-1').expect(401);
+        await login('fay@example.test').expect(401);
+
+        await ctx.prisma.loginHistory.updateMany({
+          where: { email: 'fay@example.test' },
+          data: { createdAt: new Date(Date.now() - 16 * 60_000) },
+        });
+        await login('fay@example.test').expect(200);
+      });
+
+      it('cannot be used to lock out the Super Administrator from elsewhere', async () => {
+        for (let i = 0; i < 6; i++) await viaService(seedEnv.SEED_SUPER_ADMIN_EMAIL, 'Wrong-Password-1', '203.0.113.7').catch(() => undefined);
+        await login(seedEnv.SEED_SUPER_ADMIN_EMAIL, seedEnv.SEED_SUPER_ADMIN_PASSWORD).expect(200);
+      });
+
+      it('locks the whole account after a distributed attack crosses the account threshold', async () => {
+        const user = await createUser(ctx.prisma, { email: 'gil@example.test' });
+        for (let i = 0; i < 20; i++) await viaService('gil@example.test', 'Wrong-Password-1', `198.51.100.${i}`).catch(() => undefined);
+
+        await expect(viaService('gil@example.test', DEFAULT_PASSWORD, '192.0.2.1')).rejects.toMatchObject({ status: 401 });
+        const locked = await ctx.prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+        expect(locked.lockedUntil!.getTime()).toBeGreaterThan(Date.now());
+
+        await ctx.prisma.user.update({ where: { id: user.id }, data: { lockedUntil: new Date(Date.now() - 1000) } });
+        await login('gil@example.test').expect(200);
+        const unlocked = await ctx.prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+        expect(unlocked.failedLoginCount).toBe(0);
+        expect(unlocked.lockedUntil).toBeNull();
+      });
     });
 
     it('records every attempt in the login history without any secret', async () => {
