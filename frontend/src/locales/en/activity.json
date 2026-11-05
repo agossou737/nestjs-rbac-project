@@ -1,0 +1,57 @@
+{
+  "title": "[en] Journal d'activité",
+  "description": "[en] Chaque création, modification et suppression, avec son auteur. Le journal ne peut pas être modifié.",
+  "count_one": "[en] {{formatted}} action enregistrée",
+  "count_other": "[en] {{formatted}} actions enregistrées",
+  "system_actor": "[en] Système",
+  "empty_title": "[en] Le journal est vide",
+  "empty_description": "[en] Les actions sur les comptes et les rôles apparaîtront ici.",
+  "empty_filtered_title": "[en] Aucune action ne correspond à ces filtres",
+  "empty_filtered_description": "[en] Élargissez la période ou réinitialisez les filtres.",
+  "filters": {
+    "action": "[en] Action",
+    "all_actions": "[en] Toutes les actions",
+    "entity": "[en] Élément",
+    "all_entities": "[en] Tous les éléments"
+  },
+  "columns": {
+    "date": "[en] Date",
+    "actor": "[en] Auteur",
+    "action": "[en] Action",
+    "target": "[en] Élément",
+    "details": "[en] Détails"
+  },
+  "entities": {
+    "user": "[en] Compte",
+    "role": "[en] Rôle"
+  },
+  "actions": {
+    "user": {
+      "created": "[en] a créé un compte",
+      "updated": "[en] a modifié un profil",
+      "status_changed": "[en] a changé le statut d'un compte",
+      "roles_changed": "[en] a modifié les rôles d'un compte",
+      "password_reset_requested": "[en] a envoyé un lien de réinitialisation",
+      "deleted": "[en] a supprimé un compte"
+    },
+    "role": {
+      "created": "[en] a créé un rôle",
+      "duplicated": "[en] a dupliqué un rôle",
+      "updated": "[en] a modifié un rôle",
+      "permissions_changed": "[en] a modifié les permissions d'un rôle",
+      "deleted": "[en] a supprimé un rôle"
+    }
+  },
+  "meta": {
+    "added": "[en] Ajouté",
+    "removed": "[en] Retiré",
+    "fields": "[en] Champs",
+    "from": "[en] Avant",
+    "to": "[en] Après",
+    "name": "[en] Nom",
+    "roles": "[en] Rôles",
+    "permissions": "[en] Permissions",
+    "source_name": "[en] Rôle d'origine",
+    "source_id": "[en] Identifiant d'origine"
+  }
+}

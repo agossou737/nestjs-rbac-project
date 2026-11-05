@@ -1,0 +1,29 @@
+{
+  "title": "Historique des connexions",
+  "description": "Toutes les tentatives de connexion, réussies ou non.",
+  "count_one": "{{formatted}} tentative",
+  "count_other": "{{formatted}} tentatives",
+  "unknown_ip": "IP inconnue",
+  "empty_title": "Aucune connexion enregistrée",
+  "empty_description": "Les tentatives de connexion apparaîtront ici.",
+  "empty_filtered_title": "Aucune tentative ne correspond à ces filtres",
+  "empty_filtered_description": "Élargissez la période ou réinitialisez les filtres.",
+  "outcome": {
+    "SUCCESS": "Réussie",
+    "INVALID_CREDENTIALS": "Identifiants invalides",
+    "ACCOUNT_LOCKED": "Compte verrouillé",
+    "ACCOUNT_INACTIVE": "Compte inactif"
+  },
+  "filters": {
+    "email": "Adresse saisie",
+    "outcome": "Résultat",
+    "all_outcomes": "Tous les résultats"
+  },
+  "columns": {
+    "date": "Date",
+    "email": "Adresse saisie",
+    "outcome": "Résultat",
+    "ip": "Adresse IP",
+    "agent": "Navigateur"
+  }
+}

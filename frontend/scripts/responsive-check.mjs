@@ -26,12 +26,25 @@ const routes = routesArg.length ? routesArg : ["/"];
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch();
+// Project addition: one shared context, signed in once when LOGIN_EMAIL and LOGIN_PASSWORD are set. The refresh
+// cookie rotates on every load, so every page must reuse the same cookie jar.
+const context = await browser.newContext();
+if (process.env.LOGIN_EMAIL && process.env.LOGIN_PASSWORD) {
+  const login = await context.newPage();
+  await login.goto(new URL("/login", baseUrl).href);
+  await login.getByLabel(/adresse e-mail/i).fill(process.env.LOGIN_EMAIL);
+  await login.getByLabel(/^mot de passe$/i).fill(process.env.LOGIN_PASSWORD);
+  await login.getByRole("button", { name: /se connecter/i }).click();
+  await login.waitForURL((url) => !url.pathname.startsWith("/login"));
+  await login.close();
+}
 let failures = 0, warnings = 0;
 
 for (const route of routes) {
   const url = new URL(route, baseUrl).href;
   for (const width of WIDTHS) {
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    const page = await context.newPage();
+    await page.setViewportSize({ width, height: 900 });
     try {
       await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
 
@@ -48,6 +61,8 @@ for (const route of routes) {
         // overflow-x:auto box) is intended: the scroller itself stays within the viewport.
         const clippedByScroller = (el) => {
           for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+            // Project fix: an <svg> clips its own shapes by default; that is not a page scroller.
+            if (a instanceof SVGElement) continue;
             const ox = getComputedStyle(a).overflowX;
             if (ox === "auto" || ox === "scroll" || ox === "hidden" || ox === "clip") {
               const ar = a.getBoundingClientRect();

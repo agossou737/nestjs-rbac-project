@@ -1,0 +1,57 @@
+{
+  "title": "Journal d'activité",
+  "description": "Chaque création, modification et suppression, avec son auteur. Le journal ne peut pas être modifié.",
+  "count_one": "{{formatted}} action enregistrée",
+  "count_other": "{{formatted}} actions enregistrées",
+  "system_actor": "Système",
+  "empty_title": "Le journal est vide",
+  "empty_description": "Les actions sur les comptes et les rôles apparaîtront ici.",
+  "empty_filtered_title": "Aucune action ne correspond à ces filtres",
+  "empty_filtered_description": "Élargissez la période ou réinitialisez les filtres.",
+  "filters": {
+    "action": "Action",
+    "all_actions": "Toutes les actions",
+    "entity": "Élément",
+    "all_entities": "Tous les éléments"
+  },
+  "columns": {
+    "date": "Date",
+    "actor": "Auteur",
+    "action": "Action",
+    "target": "Élément",
+    "details": "Détails"
+  },
+  "entities": {
+    "user": "Compte",
+    "role": "Rôle"
+  },
+  "actions": {
+    "user": {
+      "created": "a créé un compte",
+      "updated": "a modifié un profil",
+      "status_changed": "a changé le statut d'un compte",
+      "roles_changed": "a modifié les rôles d'un compte",
+      "password_reset_requested": "a envoyé un lien de réinitialisation",
+      "deleted": "a supprimé un compte"
+    },
+    "role": {
+      "created": "a créé un rôle",
+      "duplicated": "a dupliqué un rôle",
+      "updated": "a modifié un rôle",
+      "permissions_changed": "a modifié les permissions d'un rôle",
+      "deleted": "a supprimé un rôle"
+    }
+  },
+  "meta": {
+    "added": "Ajouté",
+    "removed": "Retiré",
+    "fields": "Champs",
+    "from": "Avant",
+    "to": "Après",
+    "name": "Nom",
+    "roles": "Rôles",
+    "permissions": "Permissions",
+    "source_name": "Rôle d'origine",
+    "source_id": "Identifiant d'origine"
+  }
+}

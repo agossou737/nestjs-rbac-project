@@ -1,0 +1,21 @@
+{
+  "title": "[en] Tableau de bord",
+  "description": "[en] L'état des comptes et des connexions, à partir des données en base.",
+  "indicators": "[en] Indicateurs",
+  "active_users": "[en] Comptes actifs",
+  "active_share": "[en] {{active}} comptes actifs sur {{total}}.",
+  "inactive_users": "[en] Comptes inactifs",
+  "locked_users": "[en] Comptes verrouillés",
+  "roles_total": "[en] Rôles",
+  "permissions_total": "[en] Permissions",
+  "logins_title": "[en] Connexions des 14 derniers jours",
+  "logins_description_one": "[en] {{count}} tentative de connexion sur la période.",
+  "logins_description_other": "[en] {{count}} tentatives de connexion sur la période.",
+  "series_success": "[en] Réussies",
+  "series_failure": "[en] Échouées",
+  "by_role_title": "[en] Comptes par rôle",
+  "recent_title": "[en] Dernières actions",
+  "recent_empty_title": "[en] Aucune action enregistrée",
+  "recent_empty_description": "[en] Les créations et modifications de comptes et de rôles apparaîtront ici.",
+  "see_all_activity": "[en] Voir tout le journal"
+}

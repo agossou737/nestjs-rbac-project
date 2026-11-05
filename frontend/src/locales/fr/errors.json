@@ -1,12 +1,41 @@
 {
   "required": "Ce champ est obligatoire.",
+  "too_long": "Ce texte est trop long.",
   "summary_title": "Corrigez les champs suivants",
+  "server_field": "Cette valeur a été refusée par le serveur. Vérifiez-la.",
+  "load_failed": "Impossible de charger ces données",
   "network": "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez.",
   "format": {
     "email": "Saisissez une adresse e-mail valide, par exemple nom@asin.bj."
   },
+  "password": {
+    "min": "Le mot de passe doit contenir au moins 12 caractères.",
+    "max": "Le mot de passe ne doit pas dépasser 128 caractères.",
+    "mismatch": "Les deux mots de passe ne correspondent pas."
+  },
   "file": {
     "type": "Format non accepté : PDF, JPEG ou PNG uniquement.",
     "size": "Le fichier dépasse 5 Mo."
-  }
+  },
+  "http": {
+    "0": "Le serveur ne répond pas. Vérifiez votre connexion puis réessayez.",
+    "400": "La demande contient des valeurs invalides.",
+    "401": "Votre session a expiré. Reconnectez-vous.",
+    "403": "Vous n'avez pas la permission d'effectuer cette action.",
+    "404": "Cet élément n'existe pas ou a été supprimé.",
+    "409": "Cette action entre en conflit avec l'état actuel des données.",
+    "429": "Trop de tentatives. Patientez une minute puis réessayez.",
+    "500": "Une erreur est survenue sur le serveur. Réessayez dans un instant.",
+    "unknown": "Une erreur inattendue est survenue. Réessayez."
+  },
+  "forbidden_title": "Accès refusé",
+  "forbidden_description": "Vos rôles ne donnent pas accès à cet écran. Demandez la permission à un administrateur si vous en avez besoin.",
+  "no_module_title": "Aucun module accessible",
+  "no_module_description": "Votre compte n'a encore aucun rôle. Un administrateur doit vous en attribuer un.",
+  "not_found_title": "Page introuvable",
+  "not_found_description": "L'adresse ne correspond à aucun écran d'Access Manager.",
+  "back_home": "Revenir à l'accueil",
+  "crash_title": "Cet écran a rencontré une erreur",
+  "crash_description": "Le reste de l'application fonctionne. Rechargez la page pour réessayer.",
+  "reload": "Recharger la page"
 }

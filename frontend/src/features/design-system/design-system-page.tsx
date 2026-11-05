@@ -202,3 +202,4 @@ export function DesignSystemPage() {
     </div>
   );
 }
+export default DesignSystemPage;

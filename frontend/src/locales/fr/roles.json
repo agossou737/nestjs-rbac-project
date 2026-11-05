@@ -1,0 +1,69 @@
+{
+  "title": "Rôles",
+  "description": "Un rôle regroupe des permissions. Attribuez-le à un compte pour lui ouvrir les modules correspondants.",
+  "count_one": "{{formatted}} rôle",
+  "count_other": "{{formatted}} rôles",
+  "search": "Rechercher un rôle",
+  "system": "Rôle système",
+  "card_counts": "{{users}} compte(s), {{permissions}} permission(s)",
+  "empty_title": "Aucun rôle ne correspond à cette recherche",
+  "empty_description": "Modifiez la recherche pour revoir tous les rôles.",
+  "columns": {
+    "name": "Rôle",
+    "description": "Description",
+    "users": "Comptes",
+    "permissions": "Permissions"
+  },
+  "fields": {
+    "name": "Nom du rôle",
+    "name_locked": "Le nom d'un rôle système ne peut pas être modifié.",
+    "description": "Description (facultatif)"
+  },
+  "create": {
+    "action": "Créer un rôle",
+    "title": "Créer un rôle",
+    "description": "Le rôle est créé sans permission. Vous choisirez ensuite ses permissions dans la matrice.",
+    "submit": "Créer le rôle",
+    "done": "Rôle {{name}} créé"
+  },
+  "actions": {
+    "menu": "Actions pour le rôle {{name}}",
+    "duplicate": "Dupliquer",
+    "duplicated": "Rôle {{name}} créé par duplication",
+    "delete": "Supprimer",
+    "delete_system": "Rôle système : suppression impossible",
+    "delete_assigned": "Encore attribué : retirez-le d'abord des comptes",
+    "deleted": "Rôle {{name}} supprimé"
+  },
+  "confirm": {
+    "delete_title": "Supprimer le rôle {{name}} ?",
+    "delete_description": "Le rôle disparaîtra des listes. Son historique reste consultable dans le journal d'activité.",
+    "delete_action": "Supprimer"
+  },
+  "errors": {
+    "name_min": "Le nom doit contenir au moins 2 caractères.",
+    "name_taken": "Un rôle porte déjà ce nom.",
+    "grant_forbidden": "Vous ne pouvez pas accorder ou retirer une permission que vous ne détenez pas vous-même.",
+    "delete_conflict": "Ce rôle ne peut pas être supprimé : c'est un rôle système ou il est encore attribué."
+  },
+  "detail": {
+    "back": "Retour aux rôles",
+    "not_found_title": "Rôle introuvable",
+    "not_found_description": "Ce rôle n'existe pas ou a été supprimé.",
+    "info_title": "Informations",
+    "saved": "Rôle enregistré"
+  },
+  "matrix": {
+    "title": "Matrice des permissions",
+    "description": "Cochez ce que les comptes ayant ce rôle peuvent faire, module par module.",
+    "module": "Module",
+    "whole_module": "Toutes les permissions du module {{module}}",
+    "select_all": "Tout cocher",
+    "select_none": "Tout décocher",
+    "save": "Enregistrer les permissions",
+    "reset": "Annuler les changements",
+    "saved": "Permissions enregistrées : elles s'appliquent dès la requête suivante",
+    "frozen": "Le rôle Super Administrator détient toujours toutes les permissions. Sa matrice ne se modifie pas.",
+    "own_role": "Vous détenez ce rôle : vos propres droits changeront dès l'enregistrement."
+  }
+}

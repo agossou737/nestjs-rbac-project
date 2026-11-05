@@ -1,6 +1,7 @@
 import { KeyRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router";
+import { useSession } from "@/app/session";
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +18,12 @@ import { navGroups } from "./nav-config";
 export function AppSidebar() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
+  const { can } = useSession();
+
+  // Only the entries the current permissions open; a group with none disappears.
+  const groups = navGroups
+    .map((group) => ({ ...group, items: group.items.filter((item) => can(item.permission)) }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <Sidebar collapsible="icon">
@@ -24,7 +31,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <NavLink to="/dashboard">
+              <NavLink to="/">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
                   <KeyRound className="size-4" aria-hidden="true" />
                 </span>
@@ -38,7 +45,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {navGroups.map((group) => (
+        {groups.map((group) => (
           <SidebarGroup key={group.key}>
             {/* nav.groups.overview | access | audit */}
             <SidebarGroupLabel>{t(`nav.groups.${group.key}`)}</SidebarGroupLabel>

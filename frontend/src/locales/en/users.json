@@ -1,0 +1,100 @@
+{
+  "title": "[en] Utilisateurs",
+  "description": "[en] Les comptes qui peuvent se connecter à Access Manager.",
+  "count_one": "[en] {{formatted}} compte",
+  "count_other": "[en] {{formatted}} comptes",
+  "no_role": "[en] Aucun rôle",
+  "never": "[en] Jamais",
+  "status": {
+    "ACTIVE": "[en] Actif",
+    "INACTIVE": "[en] Inactif",
+    "LOCKED": "[en] Verrouillé"
+  },
+  "fields": {
+    "email": "[en] Adresse e-mail",
+    "first_name": "[en] Prénom",
+    "last_name": "[en] Nom",
+    "roles_optional": "[en] Rôles (facultatif)"
+  },
+  "filters": {
+    "search": "[en] Rechercher",
+    "search_placeholder": "[en] Nom, prénom ou e-mail",
+    "status": "[en] Statut",
+    "all_statuses": "[en] Tous les statuts",
+    "role": "[en] Rôle",
+    "all_roles": "[en] Tous les rôles"
+  },
+  "columns": {
+    "name": "[en] Utilisateur",
+    "status": "[en] Statut",
+    "roles": "[en] Rôles",
+    "last_login": "[en] Dernière connexion",
+    "created": "[en] Créé le"
+  },
+  "empty": {
+    "title": "[en] Aucun compte pour l'instant",
+    "description": "[en] Créez le premier compte : la personne recevra un lien pour choisir son mot de passe.",
+    "filtered_title": "[en] Aucun compte ne correspond à ces filtres",
+    "filtered_description": "[en] Modifiez la recherche ou réinitialisez les filtres pour revoir toute la liste."
+  },
+  "create": {
+    "action": "[en] Créer un utilisateur",
+    "title": "[en] Créer un utilisateur",
+    "description": "[en] La personne recevra par e-mail un lien pour choisir son mot de passe. Personne d'autre ne le connaîtra.",
+    "roles_help": "[en] Vous ne pouvez attribuer que des rôles dont vous détenez vous-même toutes les permissions.",
+    "submit": "[en] Créer le compte",
+    "done": "[en] Compte créé, invitation envoyée à {{email}}"
+  },
+  "actions": {
+    "menu": "[en] Actions pour {{name}}",
+    "activate": "[en] Activer le compte",
+    "deactivate": "[en] Désactiver le compte",
+    "reset": "[en] Envoyer un lien de réinitialisation",
+    "delete": "[en] Supprimer le compte",
+    "activated": "[en] Compte de {{name}} activé",
+    "deactivated": "[en] Compte de {{name}} désactivé",
+    "reset_sent": "[en] Lien de réinitialisation envoyé à {{email}}",
+    "deleted": "[en] Compte de {{name}} supprimé"
+  },
+  "confirm": {
+    "deactivate_title": "[en] Désactiver le compte de {{name}} ?",
+    "deactivate_description": "[en] {{name}} ne pourra plus se connecter et ses sessions ouvertes seront fermées. Vous pourrez réactiver le compte plus tard.",
+    "deactivate_action": "[en] Désactiver",
+    "reset_title": "[en] Envoyer un lien de réinitialisation ?",
+    "reset_description": "[en] Un lien valable 30 minutes sera envoyé à {{email}}. Le mot de passe actuel reste valable tant que le lien n'est pas utilisé.",
+    "reset_action": "[en] Envoyer le lien",
+    "delete_title": "[en] Supprimer le compte de {{name}} ?",
+    "delete_description": "[en] Le compte ne pourra plus se connecter et disparaîtra des listes. Son historique reste consultable dans le journal d'activité.",
+    "delete_action": "[en] Supprimer"
+  },
+  "errors": {
+    "email_taken": "[en] Cette adresse e-mail est déjà utilisée par un autre compte, actif ou supprimé.",
+    "role_forbidden": "[en] Vous ne pouvez pas attribuer ou retirer un rôle qui donne des permissions que vous n'avez pas.",
+    "action_forbidden": "[en] Cette action n'est pas permise sur ce compte : seul un Super Administrator peut agir sur un autre Super Administrator, et personne sur son propre compte.",
+    "last_super_admin": "[en] Le dernier Super Administrator actif ne peut pas être retiré."
+  },
+  "tabs": {
+    "profile": "[en] Profil",
+    "roles": "[en] Rôles",
+    "activity": "[en] Activité",
+    "logins": "[en] Connexions"
+  },
+  "detail": {
+    "back": "[en] Retour aux utilisateurs",
+    "not_found_title": "[en] Compte introuvable",
+    "not_found_description": "[en] Ce compte n'existe pas ou a été supprimé.",
+    "profile_title": "[en] Profil",
+    "meta": "[en] Créé le {{created}}. Dernière connexion : {{last}}.",
+    "saved": "[en] Profil enregistré",
+    "roles_title": "[en] Rôles attribués",
+    "roles_help": "[en] Les permissions du compte sont la somme de celles de ses rôles. Les changements s'appliquent dès la requête suivante.",
+    "roles_readonly": "[en] Vous pouvez consulter les rôles de ce compte, sans les modifier.",
+    "roles_self": "[en] Vous ne pouvez pas modifier vos propres rôles : demandez-le à un autre administrateur.",
+    "save_roles": "[en] Enregistrer les rôles",
+    "roles_saved": "[en] Rôles enregistrés",
+    "activity_empty_title": "[en] Aucune action sur ce compte",
+    "activity_empty_description": "[en] Les modifications apportées à ce compte apparaîtront ici.",
+    "logins_empty_title": "[en] Aucune connexion",
+    "logins_empty_description": "[en] Ce compte ne s'est encore jamais connecté."
+  }
+}

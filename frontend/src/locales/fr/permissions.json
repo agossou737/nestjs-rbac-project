@@ -1,0 +1,22 @@
+{
+  "title": "Permissions",
+  "description": "Le catalogue des permissions, au format module.action. Elles s'attribuent aux rôles depuis la matrice de chaque rôle.",
+  "empty_title": "Catalogue vide",
+  "empty_description": "Aucune permission n'est enregistrée. Lancez le seed de la base de données.",
+  "modules": {
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "roles": "Rôles",
+    "permissions": "Permissions",
+    "activity_logs": "Journal d'activité",
+    "login_history": "Historique des connexions"
+  },
+  "actions": {
+    "read": "Consulter",
+    "create": "Créer",
+    "update": "Modifier",
+    "delete": "Supprimer",
+    "reset_password": "Réinitialiser le mot de passe",
+    "assign_roles": "Attribuer les rôles"
+  }
+}

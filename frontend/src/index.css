@@ -64,3 +64,18 @@
     @apply font-sans;
     }
 }
+/* Share bar of the dashboard "users by role" list: a native <progress> keeps the value accessible. */
+@layer components {
+  .role-bar {
+    @apply block h-2 w-full appearance-none overflow-hidden rounded-full bg-muted;
+  }
+  .role-bar::-webkit-progress-bar {
+    @apply bg-muted;
+  }
+  .role-bar::-webkit-progress-value {
+    @apply rounded-full bg-primary;
+  }
+  .role-bar::-moz-progress-bar {
+    @apply rounded-full bg-primary;
+  }
+}

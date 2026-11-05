@@ -1,12 +1,41 @@
 {
   "required": "[en] Ce champ est obligatoire.",
+  "too_long": "[en] Ce texte est trop long.",
   "summary_title": "[en] Corrigez les champs suivants",
+  "server_field": "[en] Cette valeur a été refusée par le serveur. Vérifiez-la.",
+  "load_failed": "[en] Impossible de charger ces données",
   "network": "[en] Le serveur ne répond pas. Vérifiez votre connexion puis réessayez.",
   "format": {
     "email": "[en] Saisissez une adresse e-mail valide, par exemple nom@asin.bj."
   },
+  "password": {
+    "min": "[en] Le mot de passe doit contenir au moins 12 caractères.",
+    "max": "[en] Le mot de passe ne doit pas dépasser 128 caractères.",
+    "mismatch": "[en] Les deux mots de passe ne correspondent pas."
+  },
   "file": {
     "type": "[en] Format non accepté : PDF, JPEG ou PNG uniquement.",
     "size": "[en] Le fichier dépasse 5 Mo."
-  }
+  },
+  "http": {
+    "0": "[en] Le serveur ne répond pas. Vérifiez votre connexion puis réessayez.",
+    "400": "[en] La demande contient des valeurs invalides.",
+    "401": "[en] Votre session a expiré. Reconnectez-vous.",
+    "403": "[en] Vous n'avez pas la permission d'effectuer cette action.",
+    "404": "[en] Cet élément n'existe pas ou a été supprimé.",
+    "409": "[en] Cette action entre en conflit avec l'état actuel des données.",
+    "429": "[en] Trop de tentatives. Patientez une minute puis réessayez.",
+    "500": "[en] Une erreur est survenue sur le serveur. Réessayez dans un instant.",
+    "unknown": "[en] Une erreur inattendue est survenue. Réessayez."
+  },
+  "forbidden_title": "[en] Accès refusé",
+  "forbidden_description": "[en] Vos rôles ne donnent pas accès à cet écran. Demandez la permission à un administrateur si vous en avez besoin.",
+  "no_module_title": "[en] Aucun module accessible",
+  "no_module_description": "[en] Votre compte n'a encore aucun rôle. Un administrateur doit vous en attribuer un.",
+  "not_found_title": "[en] Page introuvable",
+  "not_found_description": "[en] L'adresse ne correspond à aucun écran d'Access Manager.",
+  "back_home": "[en] Revenir à l'accueil",
+  "crash_title": "[en] Cet écran a rencontré une erreur",
+  "crash_description": "[en] Le reste de l'application fonctionne. Rechargez la page pour réessayer.",
+  "reload": "[en] Recharger la page"
 }

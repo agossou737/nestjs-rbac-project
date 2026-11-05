@@ -3,5 +3,14 @@
   "app_tagline": "Gestion des accès",
   "cancel": "Annuler",
   "retry": "Réessayer",
-  "module_pending": "Cet écran sera relié à l'API en phase 7. La navigation et la mise en page sont déjà en place."
+  "save": "Enregistrer",
+  "actions": "Actions",
+  "reset_filters": "Réinitialiser les filtres",
+  "pagination": "Pagination",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "page_of": "Page {{page}} sur {{pages}}",
+  "range": "{{from}} à {{to}} sur {{total}}",
+  "date_from": "Du",
+  "date_to": "Au"
 }

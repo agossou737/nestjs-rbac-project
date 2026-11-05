@@ -1,5 +1,8 @@
 {
   "toggle_sidebar": "Afficher ou masquer le menu",
+  "user_menu": "Menu du compte",
+  "no_role": "Aucun rôle",
+  "logout": "Se déconnecter",
   "groups": {
     "overview": "Pilotage",
     "access": "Gestion des accès",
