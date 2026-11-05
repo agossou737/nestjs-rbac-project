@@ -1,7 +1,10 @@
+// class-transformer reads design:type metadata: this module must not rely on Nest having loaded the polyfill.
+import 'reflect-metadata';
 import { plainToInstance, Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsString, Matches, Max, Min, MinLength, validateSync } from 'class-validator';
 
-const toBoolean = ({ value }: { value: unknown }) => value === true || value === 'true';
+// Reads the raw value: implicit conversion has already turned the string "false" into true (Boolean("false")).
+const toBoolean = ({ obj, key }: { obj: Record<string, unknown>; key: string }) => obj[key] === true || obj[key] === 'true';
 
 export class EnvironmentVariables {
   @IsIn(['development', 'test', 'production'])
