@@ -9,6 +9,12 @@ import {
   type ValidationError,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { Prisma } from '../generated/prisma/client.js';
+
+const PRISMA_STATUS: Record<string, { status: number; detail: string }> = {
+  P2002: { status: HttpStatus.CONFLICT, detail: 'A resource with the same unique value already exists' },
+  P2025: { status: HttpStatus.NOT_FOUND, detail: 'Resource not found' },
+};
 
 export type FieldError = { field: string; rule: string; message: string };
 
@@ -67,6 +73,11 @@ export class ProblemDetailsFilter implements ExceptionFilter {
       };
       if (exception instanceof ValidationProblemException) problem.errors = exception.fieldErrors;
       return problem;
+    }
+    // A unique index wins a race the service pre-checks could not see.
+    if (exception instanceof Prisma.PrismaClientKnownRequestError && exception.code in PRISMA_STATUS) {
+      const { status, detail } = PRISMA_STATUS[exception.code];
+      return { type: 'about:blank', title: statusTitle(status), status, detail, instance };
     }
     return {
       type: 'about:blank',

@@ -12,8 +12,11 @@ export class AccessPolicy {
   ) {}
 
   // A Super Administrator can only be managed by another one, and nobody manages their own account through admin routes.
-  async assertCanManageUser(actorId: string, targetUserId: string): Promise<void> {
-    if (actorId === targetUserId) throw new ForbiddenException('You cannot perform this action on your own account');
+  // allowSelf: editing your own profile is not an escalation; status, deletion, reset and roles are.
+  async assertCanManageUser(actorId: string, targetUserId: string, { allowSelf = false } = {}): Promise<void> {
+    if (actorId === targetUserId && !allowSelf) {
+      throw new ForbiddenException('You cannot perform this action on your own account');
+    }
     const target = await this.prisma.user.findFirst({ where: { id: targetUserId, deletedAt: null }, select: { id: true } });
     if (!target) throw new NotFoundException('User not found');
     if ((await this.rbac.isSuperAdmin(targetUserId)) && !(await this.rbac.isSuperAdmin(actorId))) {
@@ -30,21 +33,24 @@ export class AccessPolicy {
   ): Promise<void> {
     if (actorId === targetUserId) throw new ForbiddenException('You cannot change your own roles');
     await this.assertCanManageUser(actorId, targetUserId);
+    const roles = await this.assertCanAssignRoleIds(actorId, [...addedRoleIds, ...removedRoleIds]);
+    const removesSuperAdmin = roles.some((role) => role.name === SUPER_ADMIN_ROLE && removedRoleIds.includes(role.id));
+    if (removesSuperAdmin) await this.assertSuperAdminRemains(targetUserId);
+  }
 
-    const roleIds = [...new Set([...addedRoleIds, ...removedRoleIds])];
+  // Checks that the roles exist and that the actor holds all their permissions; returns them for the caller.
+  async assertCanAssignRoleIds(actorId: string, roleIds: string[]) {
+    const ids = [...new Set(roleIds)];
     const roles = await this.prisma.role.findMany({
-      where: { id: { in: roleIds }, deletedAt: null },
+      where: { id: { in: ids }, deletedAt: null },
       include: { permissions: { include: { permission: { select: { key: true } } } } },
     });
-    if (roles.length !== roleIds.length) throw new NotFoundException('Role not found');
-
+    if (roles.length !== ids.length) throw new NotFoundException('Role not found');
     await this.assertCanGrantPermissions(
       actorId,
       roles.flatMap((role) => role.permissions.map((rp) => rp.permission.key)),
     );
-
-    const removesSuperAdmin = roles.some((role) => role.name === SUPER_ADMIN_ROLE && removedRoleIds.includes(role.id));
-    if (removesSuperAdmin) await this.assertSuperAdminRemains(targetUserId);
+    return roles;
   }
 
   async assertCanGrantPermissions(actorId: string, permissionKeys: string[]): Promise<void> {

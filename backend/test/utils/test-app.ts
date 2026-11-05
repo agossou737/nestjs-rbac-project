@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as argon2 from 'argon2';
+import request from 'supertest';
 import { AppModule } from '../../src/app.module.js';
 import { configureApp } from '../../src/configure-app.js';
 import type { PrismaClient, UserStatus } from '../../src/generated/prisma/client.js';
@@ -62,4 +63,16 @@ export function refreshCookieFrom(setCookie: string[] | string | undefined): str
 
 export function cookiePair(setCookieLine: string): string {
   return setCookieLine.split(';')[0];
+}
+
+export const SEED_ENV = { SEED_SUPER_ADMIN_EMAIL: 'root@example.test', SEED_SUPER_ADMIN_PASSWORD: 'Root-Password-123' };
+
+// Creates a user holding these roles and returns an Authorization header for it.
+export async function loginAs(ctx: TestApp, roleNames: string[]) {
+  const user = await createUser(ctx.prisma, { roleNames });
+  const res = await request(ctx.app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email: user.email, password: DEFAULT_PASSWORD })
+    .expect(200);
+  return { user, auth: `Bearer ${res.body.access_token as string}`, cookie: cookiePair(refreshCookieFrom(res.headers['set-cookie'])!) };
 }

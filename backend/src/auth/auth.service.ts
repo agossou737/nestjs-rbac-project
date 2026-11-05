@@ -104,8 +104,11 @@ export class AuthService {
 
   async forgotPassword(email: string): Promise<void> {
     const user = await this.prisma.user.findFirst({ where: { email, status: 'ACTIVE', deletedAt: null } });
-    if (!user) return;
+    if (user) await this.issuePasswordReset(user);
+  }
 
+  // Also used to invite a new account and for an administrator-requested reset: nobody ever sees a password.
+  async issuePasswordReset(user: Pick<User, 'id' | 'email'>): Promise<void> {
     const token = generateOpaqueToken();
     await this.prisma.$transaction([
       this.prisma.passwordResetToken.deleteMany({ where: { userId: user.id, usedAt: null } }),

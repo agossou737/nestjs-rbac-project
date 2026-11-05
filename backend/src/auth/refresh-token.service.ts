@@ -80,6 +80,10 @@ export class RefreshTokenService {
     if (current) await this.revokeFamily(current.familyId);
   }
 
+  async revokeAllForUser(userId: string): Promise<void> {
+    await this.prisma.refreshToken.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
+  }
+
   async revokeFamily(familyId: string): Promise<void> {
     await this.prisma.refreshToken.updateMany({ where: { familyId, revokedAt: null }, data: { revokedAt: new Date() } });
   }
