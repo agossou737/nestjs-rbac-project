@@ -20,6 +20,7 @@ import { useListParams } from "@/lib/use-list-params";
 const PAGE_SIZE = 25;
 const FILTERS = ["action", "entity_type", "from", "to"] as const;
 const ALL = "all";
+// Mirrors the action codes written by the API (users, roles and auth services).
 const ACTIONS = [
   "user.created",
   "user.updated",
@@ -32,6 +33,11 @@ const ACTIONS = [
   "role.updated",
   "role.permissions_changed",
   "role.deleted",
+  "auth.logout",
+  "auth.password_reset",
+  "auth.login_blocked",
+  "auth.account_locked",
+  "auth.session_revoked",
 ];
 
 // The log is read-only by construction: no screen and no API route can change it.

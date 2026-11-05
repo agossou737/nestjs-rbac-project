@@ -40,6 +40,13 @@
       "updated": "[en] a modifié un rôle",
       "permissions_changed": "[en] a modifié les permissions d'un rôle",
       "deleted": "[en] a supprimé un rôle"
+    },
+    "auth": {
+      "logout": "[en] s'est déconnecté",
+      "session_revoked": "[en] a vu une session révoquée (jeton rejoué)",
+      "login_blocked": "[en] a été bloqué depuis une adresse IP après plusieurs échecs",
+      "account_locked": "[en] a vu son compte verrouillé après une attaque distribuée",
+      "password_reset": "[en] a choisi un nouveau mot de passe"
     }
   },
   "meta": {
@@ -52,6 +59,9 @@
     "roles": "[en] Rôles",
     "permissions": "[en] Permissions",
     "source_name": "[en] Rôle d'origine",
-    "source_id": "[en] Identifiant d'origine"
+    "source_id": "[en] Identifiant d'origine",
+    "reason": "[en] Motif",
+    "scope": "[en] Portée",
+    "minutes": "[en] Minutes"
   }
 }
