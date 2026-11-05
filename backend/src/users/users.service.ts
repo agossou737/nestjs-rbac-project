@@ -95,13 +95,20 @@ export class UsersService {
 
   async update(actor: ActorContext, id: string, dto: UpdateUserDto) {
     await this.policy.assertCanManageUser(actor.id, id, { allowSelf: true });
+    const before = await this.findActive(id);
     if (dto.email) await this.assertEmailFree(dto.email, id);
+    const emailChanged = dto.email !== undefined && dto.email !== before.email;
 
     const user = await this.prisma.user.update({
       where: { id },
       data: { email: dto.email, firstName: dto.first_name, lastName: dto.last_name },
       include: withRoles,
     });
+    // The email is where reset links go: a change closes the open sessions and voids the links sent to the old address.
+    if (emailChanged) {
+      await this.prisma.passwordResetToken.deleteMany({ where: { userId: id, usedAt: null } });
+      await this.refreshTokens.revokeAllForUser(id);
+    }
     await this.activity.recordFor(actor, {
       action: 'user.updated',
       entityType: 'user',

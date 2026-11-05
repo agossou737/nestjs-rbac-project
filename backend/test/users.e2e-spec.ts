@@ -193,6 +193,30 @@ describe('Users (e2e)', () => {
     });
   });
 
+  describe('account takeover (security review, finding 1)', () => {
+    it('refuses to manage an account that holds permissions the actor lacks', async () => {
+      const editor = await loginAs(ctx, ['Editor']);
+      const manager = await loginAs(ctx, ['Manager']);
+      const admin = await createUser(ctx.prisma, { roleNames: ['Administrator'] });
+
+      await http().patch(`/api/v1/users/${admin.id}`).set('Authorization', editor.auth).send({ email: 'attacker@example.test' }).expect(403);
+      await http().patch(`/api/v1/users/${admin.id}/status`).set('Authorization', manager.auth).send({ status: 'INACTIVE' }).expect(403);
+      await http().post(`/api/v1/users/${admin.id}/reset-password`).set('Authorization', manager.auth).expect(403);
+      expect((await ctx.prisma.user.findUniqueOrThrow({ where: { id: admin.id } })).email).toBe(admin.email);
+    });
+
+    it('revokes the sessions and pending reset links of an account whose email changes', async () => {
+      const manager = await loginAs(ctx, ['Manager']);
+      const target = await loginAs(ctx, ['Viewer']);
+      await http().post('/api/v1/auth/forgot-password').send({ email: target.user.email }).expect(202);
+
+      await http().patch(`/api/v1/users/${target.user.id}`).set('Authorization', manager.auth).send({ email: 'moved@example.test' }).expect(200);
+
+      await http().post('/api/v1/auth/refresh').set('Cookie', target.cookie).expect(401);
+      expect(await ctx.prisma.passwordResetToken.count({ where: { userId: target.user.id, usedAt: null } })).toBe(0);
+    });
+  });
+
   describe('PUT /users/:id/roles (privilege escalation)', () => {
     const putRoles = (auth: string, userId: string, roleIds: string[]) =>
       http().put(`/api/v1/users/${userId}/roles`).set('Authorization', auth).send({ role_ids: roleIds });

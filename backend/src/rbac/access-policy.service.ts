@@ -19,8 +19,15 @@ export class AccessPolicy {
     }
     const target = await this.prisma.user.findFirst({ where: { id: targetUserId, deletedAt: null }, select: { id: true } });
     if (!target) throw new NotFoundException('User not found');
+    if (actorId === targetUserId) return;
     if ((await this.rbac.isSuperAdmin(targetUserId)) && !(await this.rbac.isSuperAdmin(actorId))) {
       throw new ForbiddenException('Only a Super Administrator can manage a Super Administrator account');
+    }
+    // Anti-takeover: changing the email, status or password of a more powerful account would hand its rights over.
+    const held = await this.rbac.getPermissions(actorId);
+    const targetPermissions = await this.rbac.getPermissions(targetUserId);
+    if ([...targetPermissions].some((key) => !held.has(key))) {
+      throw new ForbiddenException('You cannot manage an account that holds permissions you do not hold');
     }
   }
 

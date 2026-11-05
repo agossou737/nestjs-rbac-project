@@ -70,7 +70,7 @@
   "errors": {
     "email_taken": "[en] Cette adresse e-mail est déjà utilisée par un autre compte, actif ou supprimé.",
     "role_forbidden": "[en] Vous ne pouvez pas attribuer ou retirer un rôle qui donne des permissions que vous n'avez pas.",
-    "action_forbidden": "[en] Cette action n'est pas permise sur ce compte : seul un Super Administrator peut agir sur un autre Super Administrator, et personne sur son propre compte.",
+    "action_forbidden": "[en] Cette action n'est pas permise sur ce compte : il détient des permissions que vous n'avez pas, ou c'est votre propre compte.",
     "last_super_admin": "[en] Le dernier Super Administrator actif ne peut pas être retiré."
   },
   "tabs": {
