@@ -5,13 +5,13 @@
 | Suite | Outil | Commande | Contenu |
 |---|---|---|---|
 | Backend unitaire | Vitest | `cd backend && npm test` | 23 tests : filtre d'erreurs RFC 9457, validation de la configuration, correlation id, catalogue des permissions, service d'e-mail, jetons opaques |
-| Backend e2e | Vitest + Supertest, MySQL `access_manager_test` | `cd backend && npm run test:e2e` | 99 tests sur la vraie base de test, migrations appliquées avant la suite |
+| Backend e2e | Vitest + Supertest, MySQL `access_manager_test` | `cd backend && npm run test:e2e` | 101 tests sur la vraie base de test, migrations appliquées avant la suite |
 | Backend couverture | v8 | `cd backend && npm run test:cov` | 97,5 % des lignes, 81,6 % des branches (suite e2e) |
 | Frontend unitaire | node:test | `cd frontend && npm run test:unit` | 16 tests : helpers de saisie, traduction des erreurs API, regroupement des permissions |
 | Frontend accessibilité | Playwright + axe | `cd frontend && npm run test:a11y` | 11 écrans, aucune violation sérieuse ou critique (WCAG 2.2 AA) |
-| Frontend parcours | Playwright | `cd frontend && npm run test:e2e` | 2 parcours de bout en bout sur l'API réelle et Mailpit |
+| Frontend parcours | Playwright | `cd frontend && npm run test:e2e` | 3 parcours de bout en bout sur l'API réelle et Mailpit, dont une console sans erreur ni violation CSP |
 
-Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose up -d mysql mailpit`) et les identifiants du Super Administrator du seed dans `E2E_EMAIL` et `E2E_PASSWORD`.
+Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose up -d mysql mailpit`) et les identifiants du Super Administrator du seed dans `E2E_EMAIL` et `E2E_PASSWORD`. Avec `PLAYWRIGHT_BASE_URL=http://localhost:8088`, elles s'exécutent contre la stack Docker complète (14 tests verts en phase 10).
 
 ## Exigences du cahier des charges
 
@@ -37,6 +37,7 @@ Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose
 | Dashboard servi par l'API | `reporting.e2e-spec.ts` : GET /dashboard |
 | Logs sans secret ni donnée personnelle, correlation id | `logging.e2e-spec.ts` ; `hardening.e2e-spec.ts` ; `logger.config.spec.ts` |
 | Erreurs RFC 9457 sans détail interne | `problem-details.spec.ts` ; `hardening.e2e-spec.ts` : errors |
+| Santé et déploiement | `health.e2e-spec.ts` ; suites Playwright contre la stack Docker |
 | Seed : permissions, six rôles, Super Admin depuis l'environnement | `seed.e2e-spec.ts` ; `permission-catalog.spec.ts` |
 | Sidebar selon les permissions, le backend seule barrière | `invited-viewer.spec.ts` (interface) ; suites RBAC backend (barrière réelle) |
 | Jeton d'accès en mémoire uniquement | `admin-journey.spec.ts` : aucun JWT en localStorage ni sessionStorage après rechargement |
