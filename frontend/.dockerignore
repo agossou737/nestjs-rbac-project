@@ -1,0 +1,9 @@
+node_modules
+dist
+responsive-report
+playwright-report
+test-results
+tests
+*.tsbuildinfo
+.env
+.env.*

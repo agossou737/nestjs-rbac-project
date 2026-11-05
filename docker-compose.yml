@@ -1,4 +1,5 @@
-# Local development stack. Production images go through Harbor (ASIN rule); this file is for workstations only.
+# Local stack: `docker compose up -d mysql mailpit` for development, `docker compose up -d --build` for the whole application.
+# Production images go through Harbor (ASIN rule); the base images are build arguments for that reason.
 name: access-manager
 
 services:
@@ -29,6 +30,52 @@ services:
     ports:
       - "127.0.0.1:${MAILPIT_SMTP_PORT:-1026}:1025"
       - "127.0.0.1:${MAILPIT_UI_PORT:-8026}:8025"
+
+  # API: not published on the host, reachable only through the frontend's nginx on the same origin.
+  backend:
+    build:
+      context: ./backend
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22.23-alpine}
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: mysql://${MYSQL_USER:-access_manager}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE:-access_manager}
+      CORS_ORIGINS: http://localhost:${FRONTEND_PORT:-8088}
+      APP_URL: http://localhost:${FRONTEND_PORT:-8088}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?set JWT_ACCESS_SECRET in .env (openssl rand -hex 32)}
+      COOKIE_SECURE: "true"
+      TRUST_PROXY: "1"
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      MAIL_FROM: Access Manager <no-reply@access-manager.local>
+      SEED_SUPER_ADMIN_EMAIL: ${SEED_SUPER_ADMIN_EMAIL:-}
+      SEED_SUPER_ADMIN_PASSWORD: ${SEED_SUPER_ADMIN_PASSWORD:-}
+      SEED_SUPER_ADMIN_FIRST_NAME: ${SEED_SUPER_ADMIN_FIRST_NAME:-Super}
+      SEED_SUPER_ADMIN_LAST_NAME: ${SEED_SUPER_ADMIN_LAST_NAME:-Administrateur}
+    # Migrations are versioned and only ever applied forward before the API starts.
+    command: ["sh", "-c", "npx prisma migrate deploy && exec node dist/main.js"]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22.23-alpine}
+        NGINX_IMAGE: ${NGINX_IMAGE:-nginxinc/nginx-unprivileged:1.29-alpine}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-8088}:8080"
 
 volumes:
   mysql-data:
