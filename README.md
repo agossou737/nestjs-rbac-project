@@ -4,11 +4,127 @@ Application de gestion des accès (RBAC) : comptes, rôles, matrice de permissio
 
 Le backend est la seule barrière de sécurité : l'interface masque ce qu'un compte ne peut pas faire, mais chaque route de l'API vérifie elle-même les permissions, relues en base à chaque requête.
 
+## Prise en main
+
+### Ce que fait l'application
+
+Access Manager répond à une question simple : **qui peut faire quoi** dans un système d'information. Un administrateur y gère :
+
+- les **comptes** des agents : création par invitation e-mail, activation, désactivation, suppression ;
+- les **rôles** (Administrator, Manager, Auditor…) et la **matrice des permissions** de chaque rôle, case par case ;
+- l'**attribution des rôles** aux comptes, sans jamais pouvoir s'accorder plus de droits qu'il n'en possède ;
+- la **traçabilité** : chaque action est inscrite dans un journal non modifiable, et chaque tentative de connexion dans un historique ;
+- un **tableau de bord** qui résume l'état des comptes et des connexions.
+
+Chaque agent ne voit dans le menu que les modules que ses rôles lui ouvrent, et l'API refuse de toute façon ce qui n'est pas permis.
+
+### Technologies utilisées
+
+| Partie | Technologie | Version | Rôle |
+|---|---|---|---|
+| Interface | React | 19 | Bibliothèque d'interface |
+| | TypeScript | 7 | Typage du code |
+| | Vite | 8 | Serveur de développement et build |
+| | Tailwind CSS + shadcn/ui | 4 | Styles et composants (Radix UI) |
+| | React Router | 8 | Navigation entre les écrans |
+| | TanStack Query + Axios | 5 / 1 | Appels à l'API et cache des données |
+| | React Hook Form + Zod | 7 / 4 | Formulaires et validation |
+| | Recharts, Sonner, Lucide | 3 / 2 / 1 | Graphiques, notifications, icônes |
+| | react-i18next | 17 | Textes en français (anglais en miroir) |
+| API | NestJS | 12 | Framework de l'API REST |
+| | Prisma | 7 | Accès à la base et migrations |
+| | Passport + JWT | 4 | Authentification |
+| | Argon2 | 0.45 | Hachage des mots de passe (Argon2id) |
+| | class-validator | 0.15 | Validation des données reçues |
+| | Swagger | 12 | Documentation interactive de l'API |
+| | Helmet, Throttler, pino | 8 / 6 / 10 | En-têtes de sécurité, limites de débit, journaux JSON |
+| Données | MySQL | 8.4 | Base de données |
+| Tests | Vitest + Supertest | 4 / 7 | Tests de l'API |
+| | Playwright + axe | 1.64 | Parcours complets et accessibilité |
+| Exécution | Docker Compose, nginx, Node.js | 22 | Conteneurs, service de l'interface |
+| | Mailpit | 1.27 | Boîte e-mail locale (invitations, réinitialisations) |
+
+### Lancer le projet avec Docker (le plus simple)
+
+Il faut seulement **Docker** (avec Docker Compose) et **openssl**.
+
+1. Récupérez le projet et placez-vous dans son dossier :
+
+   ```bash
+   cd access-manager
+   ```
+
+2. Créez le fichier de configuration :
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Générez un secret pour les jetons de connexion :
+
+   ```bash
+   openssl rand -hex 32
+   ```
+
+4. Ouvrez `.env` et remplacez chaque valeur qui commence par `change-me` :
+   - `MYSQL_ROOT_PASSWORD` et `MYSQL_PASSWORD` : deux mots de passe de votre choix (lettres et chiffres) ;
+   - `JWT_ACCESS_SECRET` : le secret généré à l'étape 3 ;
+   - `SEED_SUPER_ADMIN_EMAIL` et `SEED_SUPER_ADMIN_PASSWORD` : le compte administrateur à créer (mot de passe de 12 caractères au moins).
+
+5. Construisez et démarrez l'application (la première fois, comptez quelques minutes) :
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+6. Créez les rôles, les permissions et le compte administrateur :
+
+   ```bash
+   docker compose exec backend npx prisma db seed
+   ```
+
+   Cette commande peut être relancée sans risque : elle ne modifie jamais le mot de passe d'un compte existant.
+
+7. Ouvrez **http://localhost:8088** et connectez-vous avec l'e-mail et le mot de passe de l'étape 4.
+
+Les e-mails envoyés par l'application (invitation d'un nouveau compte, lien de réinitialisation) ne partent pas sur Internet : ils arrivent dans Mailpit, sur **http://localhost:8026**.
+
+Pour arrêter l'application, puis la relancer plus tard :
+
+```bash
+docker compose down
+```
+
+```bash
+docker compose up -d
+```
+
+Les données restent dans le volume MySQL entre deux lancements. Pour tout effacer et repartir de zéro : `docker compose down -v`.
+
+### Lancer le projet en mode développement
+
+Pour modifier le code avec rechargement automatique, il faut en plus **Node.js 22.18** ou plus récent et **npm 11**. Docker ne fait alors tourner que MySQL et Mailpit ; l'API et l'interface tournent sur votre machine :
+
+```bash
+docker compose up -d mysql mailpit
+```
+
+```bash
+cd backend && cp .env.example .env && npm install && npm run db:deploy && npm run db:seed && npm run start:dev
+```
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Avant la première commande `backend`, renseignez `backend/.env` (mot de passe MySQL, secret JWT, compte administrateur) : le détail est dans [Développement local](#développement-local). L'interface est alors sur **http://localhost:5180** et la documentation de l'API sur **http://localhost:3000/api/docs**.
+
 ## Sommaire
 
+0. [Prise en main](#prise-en-main)
 1. [Fonctionnalités](#fonctionnalités)
 2. [Architecture](#architecture)
-3. [Démarrage rapide avec Docker](#démarrage-rapide-avec-docker)
+3. [Lancer le projet avec Docker](#lancer-le-projet-avec-docker-le-plus-simple)
 4. [Développement local](#développement-local)
 5. [Configuration](#configuration)
 6. [Base de données, migrations et seed](#base-de-données-migrations-et-seed)
@@ -49,36 +165,9 @@ nginx (frontend)  ──  /api/*  ──►  API NestJS (/api/v1)
                                   MySQL 8.4 (Prisma Migrate)      Mailpit / SMTP
 ```
 
-| Couche | Choix |
-|---|---|
-| Frontend | React 19, TypeScript strict, Vite, Tailwind CSS v4, shadcn/ui, React Router, TanStack Query, Axios, React Hook Form + Zod, Recharts, Sonner, Lucide, react-i18next |
-| Backend | NestJS 12 (ESM), Prisma 7 (adaptateur MariaDB), Passport JWT, Argon2id, class-validator, Swagger, Helmet, @nestjs/throttler, pino |
-| Base | MySQL 8.4, utf8mb4, collation insensible à la casse |
-| Tests | Vitest + Supertest (backend), node:test et Playwright + axe (frontend) |
+Le détail des technologies et de leurs versions est dans [Technologies utilisées](#technologies-utilisées).
 
 Ce projet suit les règles du harness ASIN avec des dérogations accordées explicitement et consignées dans [ADR 0001](docs/adr/0001-stack-and-derogations.md) : MySQL au lieu de PostgreSQL, authentification locale au lieu de Keycloak, Axios au lieu d'openapi-fetch, class-validator au lieu de zod côté API, pagination par numéro de page, couleur primaire #2563EB et police Inter, Vitest au lieu de Jest.
-
-## Démarrage rapide avec Docker
-
-Prérequis : Docker et Docker Compose, `openssl`.
-
-```bash
-cp .env.example .env
-```
-
-Remplacez dans `.env` chaque valeur `change-me` : mots de passe MySQL, `JWT_ACCESS_SECRET` (`openssl rand -hex 32`) et les identifiants du Super Administrator (`SEED_SUPER_ADMIN_EMAIL`, `SEED_SUPER_ADMIN_PASSWORD` de 12 caractères au moins).
-
-```bash
-docker compose up -d --build
-```
-
-```bash
-docker compose exec backend npx prisma db seed
-```
-
-L'application est servie sur http://localhost:8088 (variable `FRONTEND_PORT`). Les e-mails (invitations, réinitialisations) arrivent dans Mailpit : http://localhost:8026. Les migrations sont appliquées automatiquement au démarrage de l'API.
-
-Le seed est idempotent : il crée ou resynchronise les permissions et les rôles système, et crée le Super Administrator s'il n'existe pas. Il ne modifie jamais le mot de passe d'un compte existant.
 
 ## Développement local
 
