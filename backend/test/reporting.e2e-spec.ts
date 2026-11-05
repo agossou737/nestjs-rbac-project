@@ -58,6 +58,23 @@ describe('Permissions, activity logs, login history and dashboard (e2e)', () => 
       expect(res.body.items[0].created_at).toMatch(/Z$/);
     });
 
+    it('filter by date range', async () => {
+      const auditor = await loginAs(ctx, ['Auditor']);
+      const log = ctx.app.get(ActivityLogService);
+      await log.record({ action: 'role.created', entityType: 'role' });
+      await ctx.prisma.activityLog.updateMany({ data: { createdAt: new Date('2026-01-10T10:00:00Z') } });
+      await log.record({ action: 'role.updated', entityType: 'role' });
+
+      const january = await http()
+        .get('/api/v1/activity-logs')
+        .query({ from: '2026-01-01T00:00:00Z', to: '2026-01-31T23:59:59Z' })
+        .set('Authorization', auditor.auth)
+        .expect(200);
+      expect(january.body.items.map((l: { action: string }) => l.action)).toEqual(['role.created']);
+
+      await http().get('/api/v1/activity-logs').query({ from: 'yesterday' }).set('Authorization', auditor.auth).expect(400);
+    });
+
     it('expose no write route', async () => {
       const { auth } = await loginAs(ctx, ['Super Administrator']);
       await http().post('/api/v1/activity-logs').set('Authorization', auth).send({}).expect(404);
@@ -95,6 +112,22 @@ describe('Permissions, activity logs, login history and dashboard (e2e)', () => 
 
     const mine = await http().get('/api/v1/login-history').query({ user_id: auditor.user.id }).set('Authorization', auditor.auth).expect(200);
     expect(mine.body.items.map((h: { outcome: string }) => h.outcome)).toEqual(['SUCCESS']);
+  });
+
+  it('GET /login-history filters by typed email and by date', async () => {
+    const auditor = await loginAs(ctx, ['Auditor']);
+    await http().post('/api/v1/auth/login').send({ email: 'stranger@elsewhere.test', password: 'Wrong-Password-1' }).expect(401);
+    await ctx.prisma.loginHistory.updateMany({ where: { email: 'stranger@elsewhere.test' }, data: { createdAt: new Date('2026-02-01T08:00:00Z') } });
+
+    const byEmail = await http().get('/api/v1/login-history').query({ email: 'elsewhere' }).set('Authorization', auditor.auth).expect(200);
+    expect(byEmail.body.items.map((h: { email: string; user_id: string | null }) => [h.email, h.user_id])).toEqual([['stranger@elsewhere.test', null]]);
+
+    const february = await http()
+      .get('/api/v1/login-history')
+      .query({ from: '2026-02-01T00:00:00Z', to: '2026-02-02T00:00:00Z' })
+      .set('Authorization', auditor.auth)
+      .expect(200);
+    expect(february.body.total).toBe(1);
   });
 
   it('GET /dashboard returns figures computed from the database', async () => {

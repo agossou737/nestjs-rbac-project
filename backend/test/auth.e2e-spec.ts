@@ -232,6 +232,20 @@ describe('Authentication (e2e)', () => {
         .expect(401);
     });
 
+    it('lets only one of two concurrent refreshes win, then closes the session as a replay', async () => {
+      await createUser(ctx.prisma, { email: 'twin@example.test' });
+      const { cookie } = await loginOk('twin@example.test');
+
+      const results = await Promise.all([
+        http().post('/api/v1/auth/refresh').set('Cookie', cookie),
+        http().post('/api/v1/auth/refresh').set('Cookie', cookie),
+      ]);
+
+      expect(results.map((res) => res.status).sort((a, b) => a - b)).toEqual([200, 401]);
+      const winner = results.find((res) => res.status === 200)!;
+      await http().post('/api/v1/auth/refresh').set('Cookie', cookiePair(refreshCookieFrom(winner.headers['set-cookie'])!)).expect(401);
+    });
+
     it('refuses a missing, unknown or expired refresh token', async () => {
       await http().post('/api/v1/auth/refresh').expect(401);
       await http().post('/api/v1/auth/refresh').set('Cookie', 'refresh_token=forged').expect(401);
