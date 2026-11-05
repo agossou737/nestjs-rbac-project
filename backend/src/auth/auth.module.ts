@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MailModule } from '../mail/mail.module.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
-import { JwtAuthGuard } from './jwt-auth.guard.js';
 import { JwtStrategy } from './jwt.strategy.js';
 import { RefreshTokenService } from './refresh-token.service.js';
 
@@ -36,6 +34,6 @@ import { RefreshTokenService } from './refresh-token.service.js';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, RefreshTokenService, JwtStrategy, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [AuthService, RefreshTokenService, JwtStrategy],
 })
 export class AuthModule {}

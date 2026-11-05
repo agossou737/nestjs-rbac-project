@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiCookieAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
+import { Authenticated } from '../rbac/permissions.decorator.js';
 import { AuthService } from './auth.service.js';
 import { type AuthenticatedUser, CurrentUser, Public } from './decorators.js';
 import { ForgotPasswordDto, LoginDto, MeDto, MessageDto, ResetPasswordDto, TokenResponseDto } from './dto.js';
@@ -60,6 +61,7 @@ export class AuthController {
     res.clearCookie(REFRESH_COOKIE, this.cookieBase);
   }
 
+  @Authenticated()
   @Get('me')
   @ApiBearerAuth()
   @ApiOkResponse({ type: MeDto })
