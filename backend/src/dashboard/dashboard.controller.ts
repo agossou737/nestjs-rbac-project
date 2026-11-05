@@ -1,5 +1,6 @@
 import { Controller, Get, Injectable } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { DashboardResponse } from '../activity-logs/responses.js';
 import { toActivityLogDto } from '../activity-logs/activity-log.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { Permissions } from '../rbac/permissions.decorator.js';
@@ -11,7 +12,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async stats() {
+  async stats(): Promise<DashboardResponse> {
     const since = new Date(startOfUtcDay(new Date()).getTime() - (DAYS - 1) * DAY_MS);
     const [byStatus, rolesTotal, permissionsTotal, loginRows, roles, recent] = await Promise.all([
       this.prisma.user.groupBy({ by: ['status'], where: { deletedAt: null }, _count: { _all: true } }),
@@ -67,6 +68,7 @@ export class DashboardController {
 
   @Get()
   @Permissions('dashboard.read')
+  @ApiOkResponse({ type: DashboardResponse })
   stats() {
     return this.dashboard.stats();
   }

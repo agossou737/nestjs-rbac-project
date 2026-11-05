@@ -11,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { AccessPolicy } from '../rbac/access-policy.service.js';
 import { RbacService } from '../rbac/rbac.service.js';
 import type { CreateUserDto, ListUsersQueryDto, UpdateUserDto } from './dto.js';
+import type { UserResponse } from './responses.js';
 
 const withRoles = {
   roles: { where: { role: { deletedAt: null } }, include: { role: { select: { id: true, name: true } } } },
@@ -180,7 +181,7 @@ export class UsersService {
   }
 }
 
-export function toUserDto(user: UserWithRoles) {
+export function toUserDto(user: UserWithRoles): UserResponse {
   return {
     id: user.id,
     email: user.email,

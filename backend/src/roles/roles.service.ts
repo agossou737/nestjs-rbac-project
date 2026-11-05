@@ -5,8 +5,9 @@ import { pageArgs, toPage } from '../common/pagination.js';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AccessPolicy } from '../rbac/access-policy.service.js';
-import { SUPER_ADMIN_ROLE } from '../rbac/permission-catalog.js';
+import { isPermissionKey, SUPER_ADMIN_ROLE } from '../rbac/permission-catalog.js';
 import type { CreateRoleDto, ListRolesQueryDto, UpdateRoleDto } from './dto.js';
+import type { RoleDetailResponse, RoleResponse } from './responses.js';
 
 // Users counted are the live accounts only; a deleted account does not keep a role "in use".
 const withCounts = {
@@ -175,7 +176,7 @@ export class RolesService {
   }
 }
 
-function toRoleDto(role: RoleWithCounts) {
+function toRoleDto(role: RoleWithCounts): RoleResponse {
   return {
     id: role.id,
     name: role.name,
@@ -188,6 +189,6 @@ function toRoleDto(role: RoleWithCounts) {
   };
 }
 
-function toRoleDetailDto(role: RoleWithDetail) {
-  return { ...toRoleDto(role), permissions: role.permissions.map((rp) => rp.permission.key).sort() };
+function toRoleDetailDto(role: RoleWithDetail): RoleDetailResponse {
+  return { ...toRoleDto(role), permissions: role.permissions.map((rp) => rp.permission.key).filter(isPermissionKey).sort() };
 }

@@ -4,6 +4,7 @@ import { pageArgs, toPage } from '../common/pagination.js';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { ListActivityLogsQueryDto } from './dto.js';
+import type { ActivityLogResponse } from './responses.js';
 
 export type ActivityEntry = {
   actorId?: string;
@@ -65,13 +66,13 @@ type LogWithActor = Prisma.ActivityLogGetPayload<{
   include: { actor: { select: { id: true; email: true; firstName: true; lastName: true } } };
 }>;
 
-export function toActivityLogDto(log: LogWithActor) {
+export function toActivityLogDto(log: LogWithActor): ActivityLogResponse {
   return {
     id: log.id,
     action: log.action,
     entity_type: log.entityType,
     entity_id: log.entityId,
-    metadata: log.metadata,
+    metadata: log.metadata as Record<string, unknown> | null,
     ip_address: log.ipAddress,
     user_agent: log.userAgent,
     created_at: log.createdAt.toISOString(),

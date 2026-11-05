@@ -21,6 +21,10 @@ export type PermissionKey = (typeof PERMISSIONS)[number]['key'];
 
 export const ALL_PERMISSION_KEYS: readonly PermissionKey[] = PERMISSIONS.map((p) => p.key);
 
+export function isPermissionKey(key: string): key is PermissionKey {
+  return (ALL_PERMISSION_KEYS as readonly string[]).includes(key);
+}
+
 export const SUPER_ADMIN_ROLE = 'Super Administrator';
 
 type SystemRole = { name: string; description: string; permissions: readonly PermissionKey[] };

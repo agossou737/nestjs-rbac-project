@@ -1,5 +1,6 @@
 import { Controller, Get, Injectable, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { LoginHistoryPageResponse } from '../activity-logs/responses.js';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsISO8601, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 import { PageQueryDto, pageArgs, toPage } from '../common/pagination.js';
@@ -63,6 +64,7 @@ export class LoginHistoryController {
 
   @Get()
   @Permissions('login_history.read')
+  @ApiOkResponse({ type: LoginHistoryPageResponse })
   list(@Query() query: ListLoginHistoryQueryDto) {
     return this.history.list(query);
   }

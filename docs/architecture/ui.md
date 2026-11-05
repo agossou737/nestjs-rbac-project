@@ -57,4 +57,15 @@ Règles de composition :
 | AppShell | composition (SidebarProvider, SidebarInset, SidebarTrigger, Separator) | Sidebar | mise en page commune à tous les écrans authentifiés |
 | AppSidebar | composition (Sidebar, SidebarMenu, SidebarGroup) | Sidebar | navigation groupée par domaine, filtrée par permission |
 | PageHeader | composition (titre, description, zone d'actions) | aucun composant dédié | en-tête identique sur chaque écran |
-| ModulePendingPage | composition (Empty) | Empty | temporaire : remplacé par les écrans réels en phase 7 |
+| AuthLayout | composition (bloc primary, Outlet) | aucun composant dédié | écrans de connexion, élément mémorable ECR-001 à 003 |
+| UserMenu | composition (DropdownMenu, Avatar, Button) | Dropdown Menu | compte connecté, rôles, déconnexion |
+| ListPagination | composition (Button) | Pagination | la pagination shadcn est faite de liens ; les listes paginent par état d'URL |
+| SortableHead | composition (TableHead) | Data Table | tri serveur, `aria-sort` |
+| QueryError, EmptyState, RowsSkeleton | composition (Alert, Empty, Skeleton) | Alert, Empty, Skeleton | les trois états communs à chaque écran |
+| ConfirmDialog | composition (AlertDialog) | Alert Dialog | toute action destructrice |
+| FormErrorSummary | composition (Alert) | Alert | résumé d'erreurs au-delà de trois champs |
+| DateRangeFilter | composition (Input date, Label) | Date Picker | une plage de dates de filtre ; le sélecteur natif suffit |
+| ActivityLine, LoginOutcomeBadge | composition (Badge, time) | Badge | ligne d'activité et résultat de connexion |
+| UserStatusBadge | composition (Badge) | Badge | statut écrit, jamais la seule couleur |
+| RoleChecklist | composition (Checkbox, Field) | Checkbox | rôles d'un compte |
+| PermissionMatrix | composition (Table, Checkbox, Button) | Data Table, Checkbox | matrice module x action (ECR-008), cartes sous 768 px |
