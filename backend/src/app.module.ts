@@ -10,6 +10,7 @@ import { throttlerOptions } from './common/credential-rate-limit.js';
 import { loggerParams } from './common/logger.config.js';
 import { validateEnv } from './config/env.validation.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
+import { HealthModule } from './health/health.module.js';
 import { LoginHistoryModule } from './login-history/login-history.module.js';
 import { PermissionsModule } from './permissions/permissions.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module.js';
     PermissionsModule,
     LoginHistoryModule,
     DashboardModule,
+    HealthModule,
   ],
   // Order matters: rate limit first (cheap, before any database read), then authenticate, then check permissions.
   providers: [
