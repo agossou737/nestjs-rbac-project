@@ -32,7 +32,7 @@ Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose
 | Doublons (e-mail, nom de rôle) | `seed.e2e-spec.ts`, `users.e2e-spec.ts`, `roles.e2e-spec.ts` |
 | Utilisateurs : CRUD, statut, recherche, filtres, tri, pagination serveur | `users.e2e-spec.ts` |
 | Rôles : CRUD, duplication | `roles.e2e-spec.ts` |
-| Invitation par e-mail avec les rôles (événement, file, nouvelles tentatives, idempotence) | `notifications.e2e-spec.ts` ; `mail.service.spec.ts` |
+| E-mails d'invitation et de changement de rôles (événement, file, nouvelles tentatives, idempotence) | `notifications.e2e-spec.ts` ; `mail.service.spec.ts` |
 | Départements : CRUD, doublons, membres, responsable | `departments.e2e-spec.ts` ; `tests/e2e/departments.spec.ts` (interface) |
 | Journal d'activité immuable, sans secret, filtrable | `reporting.e2e-spec.ts` ; `hardening.e2e-spec.ts` |
 | Historique des connexions | `auth.e2e-spec.ts` : login history ; `reporting.e2e-spec.ts` |

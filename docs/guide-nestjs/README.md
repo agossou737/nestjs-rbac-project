@@ -12,7 +12,7 @@ Lisez les chapitres dans l'ordre. Chaque chapitre indique les fichiers à ouvrir
 | 02 | [Ajouter une ressource CRUD de A à Z](02-crud-de-a-a-z.md) | Les départements : schéma Prisma et migration, permissions, DTO, service, contrôleur, tests e2e écrits d'abord |
 | 03 | [Côté React : du contrat OpenAPI à l'écran](03-react-du-contrat-a-l-ecran.md) | Types générés, couche réseau, TanStack Query et invalidations, liste et formulaire, combobox avec recherche serveur, tests Playwright |
 | 04 | [Événements et files de tâches](04-evenements-et-files.md) | `@nestjs/event-emitter`, BullMQ et Redis, idempotence, nouvelles tentatives, tester l'asynchrone : l'e-mail d'invitation avec les rôles |
-| 05 | Notifications de changement de rôles | À venir : un second type de tâche, idempotence, nouvelles tentatives |
+| 05 | [Notifier un changement de rôles](05-changement-de-roles.md) | Un second type de tâche, que figer et que relire, idempotence par changement, surveiller les abandons, l'incident des versions décalées |
 
 ## Comment travailler avec ce guide
 
