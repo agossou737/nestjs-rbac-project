@@ -326,6 +326,14 @@
             }
           },
           {
+            "name": "department_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "sort",
             "required": false,
             "in": "query",
@@ -616,6 +624,226 @@
         ],
         "tags": [
           "users"
+        ]
+      }
+    },
+    "/api/v1/departments": {
+      "get": {
+        "operationId": "DepartmentsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page_size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Searches code and name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "code",
+                "created_at"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentPageResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      },
+      "post": {
+        "operationId": "DepartmentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      }
+    },
+    "/api/v1/departments/{id}": {
+      "get": {
+        "operationId": "DepartmentsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      },
+      "patch": {
+        "operationId": "DepartmentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      },
+      "delete": {
+        "operationId": "DepartmentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
         ]
       }
     },
@@ -1078,6 +1306,20 @@
           "dashboard"
         ]
       }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
     }
   },
   "info": {
@@ -1402,6 +1644,25 @@
           "name"
         ]
       },
+      "DepartmentRefResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name"
+        ]
+      },
       "UserResponse": {
         "type": "object",
         "properties": {
@@ -1445,6 +1706,15 @@
             "items": {
               "$ref": "#/components/schemas/RoleRefResponse"
             }
+          },
+          "department": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DepartmentRefResponse"
+              }
+            ]
           }
         },
         "required": [
@@ -1457,7 +1727,8 @@
           "last_login_at",
           "created_at",
           "updated_at",
-          "roles"
+          "roles",
+          "department"
         ]
       },
       "UserPageResponse": {
@@ -1504,6 +1775,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "department_id": {
+            "type": "string"
           }
         },
         "required": [
@@ -1523,6 +1797,10 @@
           },
           "last_name": {
             "type": "string"
+          },
+          "department_id": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -1555,6 +1833,148 @@
         "required": [
           "role_ids"
         ]
+      },
+      "DepartmentManagerResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "first_name",
+          "last_name"
+        ]
+      },
+      "DepartmentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "DSI"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "manager": {
+            "nullable": true,
+            "description": "Null when no manager is set or the manager account was deleted.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DepartmentManagerResponse"
+              }
+            ]
+          },
+          "users_count": {
+            "type": "number",
+            "description": "Live (non-deleted) accounts attached to the department."
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description",
+          "manager",
+          "users_count",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "DepartmentPageResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DepartmentResponse"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "page_size": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ]
+      },
+      "CreateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "DSI",
+            "description": "Short code, upper-cased: letters, digits, dash and underscore"
+          },
+          "name": {
+            "type": "string",
+            "example": "Direction des systèmes d’information"
+          },
+          "description": {
+            "type": "string"
+          },
+          "manager_id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ]
+      },
+      "UpdateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "DSI"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "manager_id": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "RoleResponse": {
         "type": "object",
@@ -1668,6 +2088,10 @@
                 "roles.update",
                 "roles.delete",
                 "permissions.read",
+                "departments.read",
+                "departments.create",
+                "departments.update",
+                "departments.delete",
                 "activity_logs.read",
                 "login_history.read"
               ]
@@ -1706,6 +2130,10 @@
                 "roles.update",
                 "roles.delete",
                 "permissions.read",
+                "departments.read",
+                "departments.create",
+                "departments.update",
+                "departments.delete",
                 "activity_logs.read",
                 "login_history.read"
               ]
@@ -1763,6 +2191,10 @@
                 "roles.update",
                 "roles.delete",
                 "permissions.read",
+                "departments.read",
+                "departments.create",
+                "departments.update",
+                "departments.delete",
                 "activity_logs.read",
                 "login_history.read"
               ]
@@ -1794,6 +2226,10 @@
               "roles.update",
               "roles.delete",
               "permissions.read",
+              "departments.read",
+              "departments.create",
+              "departments.update",
+              "departments.delete",
               "activity_logs.read",
               "login_history.read"
             ]

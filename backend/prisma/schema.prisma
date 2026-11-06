@@ -38,7 +38,10 @@ model User {
   createdAt          DateTime   @default(now()) @map("created_at") @db.DateTime(3)
   updatedAt          DateTime   @updatedAt @map("updated_at") @db.DateTime(3)
   deletedAt          DateTime?  @map("deleted_at") @db.DateTime(3)
+  departmentId       String?    @map("department_id") @db.Char(36)
 
+  department          Department?          @relation("DepartmentMembers", fields: [departmentId], references: [id], onDelete: Restrict)
+  managedDepartments  Department[]         @relation("DepartmentManager")
   roles               UserRole[]           @relation("UserRoles")
   assignedRoles       UserRole[]           @relation("UserRoleAssigner")
   refreshTokens       RefreshToken[]
@@ -49,7 +52,28 @@ model User {
   @@index([status, deletedAt])
   @@index([lastName, firstName])
   @@index([createdAt])
+  @@index([departmentId])
   @@map("users")
+}
+
+// An organisational unit. Code and name stay unique deleted rows included, like role names: a deletion renames them
+// so they can be reused (see DepartmentsService.remove).
+model Department {
+  id          String    @id @default(uuid()) @db.Char(36)
+  code        String    @unique @db.VarChar(80)
+  name        String    @unique @db.VarChar(160)
+  description String?   @db.VarChar(500)
+  managerId   String?   @map("manager_id") @db.Char(36)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.DateTime(3)
+  deletedAt   DateTime? @map("deleted_at") @db.DateTime(3)
+
+  manager User?  @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
+  members User[] @relation("DepartmentMembers")
+
+  @@index([deletedAt])
+  @@index([managerId])
+  @@map("departments")
 }
 
 model Role {

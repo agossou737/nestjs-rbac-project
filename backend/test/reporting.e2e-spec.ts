@@ -1,3 +1,4 @@
+import { PERMISSIONS } from '../src/rbac/permission-catalog.js';
 import request from 'supertest';
 import { seedDatabase } from '../prisma/seed-database.js';
 import { ActivityLogService } from '../src/activity-logs/activity-log.service.js';
@@ -24,7 +25,7 @@ describe('Permissions, activity logs, login history and dashboard (e2e)', () => 
   it('GET /permissions lists the catalogue as module.action', async () => {
     const { auth } = await loginAs(ctx, ['Viewer']);
     const res = await http().get('/api/v1/permissions').set('Authorization', auth).expect(200);
-    expect(res.body).toHaveLength(14);
+    expect(res.body).toHaveLength(PERMISSIONS.length);
     expect(res.body[0]).toEqual({
       id: expect.any(String),
       key: 'activity_logs.read',
@@ -140,7 +141,7 @@ describe('Permissions, activity logs, login history and dashboard (e2e)', () => 
 
     expect(res.body.users).toEqual({ total: 4, active: 2, inactive: 1, locked: 1 });
     expect(res.body.roles_total).toBe(6);
-    expect(res.body.permissions_total).toBe(14);
+    expect(res.body.permissions_total).toBe(PERMISSIONS.length);
     expect(res.body.logins_by_day).toHaveLength(14);
     expect(res.body.logins_by_day.at(-1)).toMatchObject({ success: 1, failure: 0 });
     expect(res.body.users_by_role).toEqual(

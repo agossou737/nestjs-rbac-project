@@ -1,12 +1,13 @@
 # Modèle de données : Access Manager
 
-Source : `backend/prisma/schema.prisma`, migration initiale `backend/prisma/migrations/20261104180309_init`. MySQL 8.4, jeu de caractères utf8mb4, collation `utf8mb4_unicode_ci` (comparaisons insensibles à la casse). Les colonnes sont en snake_case et les identifiants sont des UUID (`CHAR(36)`).
+Source : `backend/prisma/schema.prisma`, migrations `backend/prisma/migrations/` (`init`, puis `add_departments`). MySQL 8.4, jeu de caractères utf8mb4, collation `utf8mb4_unicode_ci` (comparaisons insensibles à la casse). Les colonnes sont en snake_case et les identifiants sont des UUID (`CHAR(36)`).
 
 ## Tables
 
 | Table | Rôle | Contraintes et index |
 |---|---|---|
 | `users` | Comptes | `email` unique (insensible à la casse, conservé après suppression logique) ; index `(status, deleted_at)`, `(last_name, first_name)`, `created_at` |
+| `departments` | Unités organisationnelles | `code` et `name` uniques (renommés à la suppression logique pour être réutilisables) ; `manager_id` vers `users` (`SET NULL`) ; les comptes y sont rattachés par `users.department_id` (`RESTRICT`), index `deleted_at`, `manager_id` |
 | `roles` | Rôles | `name` unique ; `is_system` protège les six rôles du seed ; index `deleted_at` |
 | `permissions` | Catalogue `module.action` | `key` unique, `(module, action)` unique ; pas de suppression logique (référentiel porté par le code) |
 | `user_roles` | Multi-rôles | clé primaire `(user_id, role_id)`, index `role_id` ; `assigned_by_id` trace l'auteur de l'attribution |
@@ -27,17 +28,17 @@ Source : `backend/prisma/schema.prisma`, migration initiale `backend/prisma/migr
 
 `npm run db:seed` (idempotent) :
 
-- **Permissions** : les 14 permissions de `src/rbac/permission-catalog.ts`.
+- **Permissions** : les 18 permissions de `src/rbac/permission-catalog.ts`.
 - **Rôles système** (`is_system = 1`) :
 
   | Rôle | Permissions |
   |---|---|
-  | Super Administrator | 14 |
-  | Administrator | 13 (toutes sauf `roles.delete`) |
-  | Manager | 8 |
-  | Auditor | 6 |
-  | Viewer | 4 |
-  | Editor | 3 |
+  | Super Administrator | 18 |
+  | Administrator | 17 (toutes sauf `roles.delete`) |
+  | Manager | 9 |
+  | Auditor | 7 |
+  | Viewer | 5 |
+  | Editor | 4 |
 
   Les permissions des rôles système sont resynchronisées à chaque exécution.
 - **Super Admin** : créé à partir de `SEED_SUPER_ADMIN_*`. Mot de passe d'au moins 12 caractères, haché en Argon2id. Un compte existant n'est jamais modifié.

@@ -1,3 +1,4 @@
+import { PERMISSIONS, SYSTEM_ROLES } from '../src/rbac/permission-catalog.js';
 import request from 'supertest';
 import { seedDatabase } from '../prisma/seed-database.js';
 import { resetDatabase } from './utils/reset-database.js';
@@ -27,14 +28,14 @@ describe('Roles (e2e)', () => {
 
     expect(res.body.total).toBe(6);
     const superAdmin = res.body.items.find((r: { name: string }) => r.name === 'Super Administrator');
-    expect(superAdmin).toMatchObject({ is_system: true, permissions_count: 14, users_count: 1 });
+    expect(superAdmin).toMatchObject({ is_system: true, permissions_count: PERMISSIONS.length, users_count: 1 });
   });
 
   it('returns a role with its permission keys', async () => {
     const { auth } = await loginAs(ctx, ['Viewer']);
     const viewer = await role('Viewer');
     const res = await http().get(`/api/v1/roles/${viewer.id}`).set('Authorization', auth).expect(200);
-    expect(res.body.permissions).toEqual(['dashboard.read', 'permissions.read', 'roles.read', 'users.read']);
+    expect(res.body.permissions).toEqual(['dashboard.read', 'departments.read', 'permissions.read', 'roles.read', 'users.read']);
   });
 
   describe('POST /roles', () => {
@@ -69,7 +70,7 @@ describe('Roles (e2e)', () => {
       const manager = await role('Manager');
 
       const res = await http().post(`/api/v1/roles/${manager.id}/duplicate`).set('Authorization', auth).send({}).expect(201);
-      expect(res.body).toMatchObject({ name: 'Manager (copie)', is_system: false, permissions_count: 8 });
+      expect(res.body).toMatchObject({ name: 'Manager (copie)', is_system: false, permissions_count: SYSTEM_ROLES.find((r) => r.name === 'Manager')!.permissions.length });
 
       const again = await http().post(`/api/v1/roles/${manager.id}/duplicate`).set('Authorization', auth).send({}).expect(201);
       expect(again.body.name).toBe('Manager (copie 2)');
@@ -110,7 +111,7 @@ describe('Roles (e2e)', () => {
       const res = await http()
         .put(`/api/v1/roles/${viewerRole.id}/permissions`)
         .set('Authorization', administrator.auth)
-        .send({ permissions: ['dashboard.read', 'users.read', 'roles.read', 'permissions.read', 'activity_logs.read'] })
+        .send({ permissions: ['dashboard.read', 'users.read', 'roles.read', 'permissions.read', 'departments.read', 'activity_logs.read'] })
         .expect(200);
       expect(res.body.permissions).toContain('activity_logs.read');
       await http().get('/api/v1/activity-logs').set('Authorization', viewer.auth).expect(200);

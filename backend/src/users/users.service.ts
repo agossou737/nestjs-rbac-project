@@ -8,6 +8,7 @@ import type { ActorContext } from '../common/actor.decorator.js';
 import { pageArgs, toPage } from '../common/pagination.js';
 import type { Prisma, UserStatus } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { DepartmentsService } from '../departments/departments.service.js';
 import { AccessPolicy } from '../rbac/access-policy.service.js';
 import { RbacService } from '../rbac/rbac.service.js';
 import type { CreateUserDto, ListUsersQueryDto, UpdateUserDto } from './dto.js';
@@ -15,6 +16,7 @@ import type { UserResponse } from './responses.js';
 
 const withRoles = {
   roles: { where: { role: { deletedAt: null } }, include: { role: { select: { id: true, name: true } } } },
+  department: { select: { id: true, code: true, name: true } },
 } satisfies Prisma.UserInclude;
 
 type UserWithRoles = Prisma.UserGetPayload<{ include: typeof withRoles }>;
@@ -36,6 +38,7 @@ export class UsersService {
     private readonly auth: AuthService,
     private readonly refreshTokens: RefreshTokenService,
     private readonly activity: ActivityLogService,
+    private readonly departments: DepartmentsService,
   ) {}
 
   async list(query: ListUsersQueryDto) {
@@ -43,6 +46,7 @@ export class UsersService {
       deletedAt: null,
       status: query.status,
       roles: query.role_id ? { some: { roleId: query.role_id } } : undefined,
+      departmentId: query.department_id,
       OR: query.search
         ? [
             { email: { contains: query.search } },
@@ -71,6 +75,7 @@ export class UsersService {
   async create(actor: ActorContext, dto: CreateUserDto) {
     const roles = await this.policy.assertCanAssignRoleIds(actor.id, dto.role_ids ?? []);
     await this.assertEmailFree(dto.email);
+    if (dto.department_id) await this.departments.assertActive(dto.department_id);
 
     // The random password is never shown nor sent: the account owner sets theirs through the invitation link.
     const user = await this.prisma.user.create({
@@ -79,6 +84,7 @@ export class UsersService {
         firstName: dto.first_name,
         lastName: dto.last_name,
         passwordHash: await hashPassword(generateOpaqueToken()),
+        departmentId: dto.department_id,
         roles: { create: roles.map((role) => ({ roleId: role.id, assignedById: actor.id })) },
       },
       include: withRoles,
@@ -97,11 +103,12 @@ export class UsersService {
     await this.policy.assertCanManageUser(actor.id, id, { allowSelf: true });
     const before = await this.findActive(id);
     if (dto.email) await this.assertEmailFree(dto.email, id);
+    if (dto.department_id) await this.departments.assertActive(dto.department_id);
     const emailChanged = dto.email !== undefined && dto.email !== before.email;
 
     const user = await this.prisma.user.update({
       where: { id },
-      data: { email: dto.email, firstName: dto.first_name, lastName: dto.last_name },
+      data: { email: dto.email, firstName: dto.first_name, lastName: dto.last_name, departmentId: dto.department_id },
       include: withRoles,
     });
     // The email is where reset links go: a change closes the open sessions and voids the links sent to the old address.
@@ -200,5 +207,6 @@ export function toUserDto(user: UserWithRoles): UserResponse {
     created_at: user.createdAt.toISOString(),
     updated_at: user.updatedAt.toISOString(),
     roles: user.roles.map((ur) => ({ id: ur.role.id, name: ur.role.name })).sort((a, b) => a.name.localeCompare(b.name)),
+    department: user.department,
   };
 }

@@ -13,6 +13,10 @@ export const PERMISSIONS = [
   { key: 'roles.update', description: "Modifier un rôle et ses permissions" },
   { key: 'roles.delete', description: 'Supprimer un rôle' },
   { key: 'permissions.read', description: 'Consulter le catalogue des permissions' },
+  { key: 'departments.read', description: 'Consulter les départements' },
+  { key: 'departments.create', description: 'Créer un département' },
+  { key: 'departments.update', description: 'Modifier un département et son responsable' },
+  { key: 'departments.delete', description: 'Supprimer un département' },
   { key: 'activity_logs.read', description: "Consulter le journal d'activité" },
   { key: 'login_history.read', description: "Consulter l'historique des connexions" },
 ] as const;
@@ -29,7 +33,7 @@ export const SUPER_ADMIN_ROLE = 'Super Administrator';
 
 type SystemRole = { name: string; description: string; permissions: readonly PermissionKey[] };
 
-const READ_DIRECTORY: PermissionKey[] = ['dashboard.read', 'users.read', 'roles.read', 'permissions.read'];
+const READ_DIRECTORY: PermissionKey[] = ['dashboard.read', 'users.read', 'roles.read', 'permissions.read', 'departments.read'];
 
 export const SYSTEM_ROLES: readonly SystemRole[] = [
   {
@@ -56,7 +60,7 @@ export const SYSTEM_ROLES: readonly SystemRole[] = [
   {
     name: 'Editor',
     description: 'Mise à jour des fiches utilisateurs.',
-    permissions: ['dashboard.read', 'users.read', 'users.update'],
+    permissions: ['dashboard.read', 'users.read', 'users.update', 'departments.read'],
   },
   {
     name: 'Viewer',

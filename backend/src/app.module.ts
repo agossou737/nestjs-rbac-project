@@ -10,6 +10,7 @@ import { throttlerOptions } from './common/credential-rate-limit.js';
 import { loggerParams } from './common/logger.config.js';
 import { validateEnv } from './config/env.validation.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
+import { DepartmentsModule } from './departments/departments.module.js';
 import { HealthModule } from './health/health.module.js';
 import { LoginHistoryModule } from './login-history/login-history.module.js';
 import { PermissionsModule } from './permissions/permissions.module.js';
@@ -35,6 +36,7 @@ import { UsersModule } from './users/users.module.js';
     ActivityLogsModule,
     AuthModule,
     UsersModule,
+    DepartmentsModule,
     RolesModule,
     PermissionsModule,
     LoginHistoryModule,

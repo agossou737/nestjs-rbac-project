@@ -185,7 +185,7 @@ describe('Authentication (e2e)', () => {
 
       const first = await http().get('/api/v1/auth/me').set('Authorization', `Bearer ${accessToken}`).expect(200);
       expect(first.body).toMatchObject({ email: 'gina@example.test', status: 'ACTIVE', roles: [{ name: 'Viewer' }] });
-      expect(first.body.permissions).toEqual(['dashboard.read', 'permissions.read', 'roles.read', 'users.read']);
+      expect(first.body.permissions).toEqual(['dashboard.read', 'departments.read', 'permissions.read', 'roles.read', 'users.read']);
 
       const viewer = await ctx.prisma.role.findUniqueOrThrow({ where: { name: 'Viewer' } });
       const auditLog = await ctx.prisma.permission.findUniqueOrThrow({ where: { key: 'activity_logs.read' } });

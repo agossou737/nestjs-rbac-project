@@ -1,4 +1,5 @@
 // Response contracts, documented in OpenAPI by the @nestjs/swagger CLI plugin (nest-cli.json); the frontend types derive from them.
+import { DepartmentRefResponse } from '../departments/responses.js';
 import type { UserStatus } from '../generated/prisma/enums.js';
 
 export class RoleRefResponse {
@@ -18,6 +19,7 @@ export class UserResponse {
   created_at!: string;
   updated_at!: string;
   roles!: RoleRefResponse[];
+  department!: DepartmentRefResponse | null;
 }
 
 export class UserPageResponse {

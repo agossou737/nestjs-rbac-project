@@ -196,6 +196,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/departments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DepartmentsController_list"];
+        put?: never;
+        post: operations["DepartmentsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/departments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DepartmentsController_get"];
+        put?: never;
+        post?: never;
+        delete: operations["DepartmentsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["DepartmentsController_update"];
+        trace?: never;
+    };
     "/api/v1/roles": {
         parameters: {
             query?: never;
@@ -308,6 +340,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthController_check"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -400,6 +448,11 @@ export interface components {
             id: string;
             name: string;
         };
+        DepartmentRefResponse: {
+            id: string;
+            code: string;
+            name: string;
+        };
         UserResponse: {
             id: string;
             email: string;
@@ -415,6 +468,7 @@ export interface components {
             created_at: string;
             updated_at: string;
             roles: components["schemas"]["RoleRefResponse"][];
+            department: components["schemas"]["DepartmentRefResponse"] | null;
         };
         UserPageResponse: {
             items: components["schemas"]["UserResponse"][];
@@ -428,11 +482,13 @@ export interface components {
             last_name: string;
             /** @description Roles to assign; the account is invited by email */
             role_ids?: string[];
+            department_id?: string;
         };
         UpdateUserDto: {
             email?: string;
             first_name?: string;
             last_name?: string;
+            department_id?: string | null;
         };
         UpdateStatusDto: {
             /** @enum {string} */
@@ -440,6 +496,49 @@ export interface components {
         };
         RoleIdsDto: {
             role_ids: string[];
+        };
+        DepartmentManagerResponse: {
+            id: string;
+            email: string;
+            first_name: string;
+            last_name: string;
+        };
+        DepartmentResponse: {
+            id: string;
+            /** @example DSI */
+            code: string;
+            name: string;
+            description: string | null;
+            /** @description Null when no manager is set or the manager account was deleted. */
+            manager: components["schemas"]["DepartmentManagerResponse"] | null;
+            /** @description Live (non-deleted) accounts attached to the department. */
+            users_count: number;
+            created_at: string;
+            updated_at: string;
+        };
+        DepartmentPageResponse: {
+            items: components["schemas"]["DepartmentResponse"][];
+            total: number;
+            page: number;
+            page_size: number;
+        };
+        CreateDepartmentDto: {
+            /**
+             * @description Short code, upper-cased: letters, digits, dash and underscore
+             * @example DSI
+             */
+            code: string;
+            /** @example Direction des systèmes d’information */
+            name: string;
+            description?: string;
+            manager_id?: string | null;
+        };
+        UpdateDepartmentDto: {
+            /** @example DSI */
+            code?: string;
+            name?: string;
+            description?: string;
+            manager_id?: string | null;
         };
         RoleResponse: {
             id: string;
@@ -467,10 +566,10 @@ export interface components {
             created_at: string;
             updated_at: string;
             /** @description Permission keys (module.action), sorted. */
-            permissions: ("dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "activity_logs.read" | "login_history.read")[];
+            permissions: ("dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "departments.read" | "departments.create" | "departments.update" | "departments.delete" | "activity_logs.read" | "login_history.read")[];
         };
         CreateRoleDto: {
-            permissions: ("dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "activity_logs.read" | "login_history.read")[];
+            permissions: ("dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "departments.read" | "departments.create" | "departments.update" | "departments.delete" | "activity_logs.read" | "login_history.read")[];
             name: string;
             description?: string;
         };
@@ -483,12 +582,12 @@ export interface components {
             description?: string;
         };
         PermissionKeysDto: {
-            permissions: ("dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "activity_logs.read" | "login_history.read")[];
+            permissions: ("dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "departments.read" | "departments.create" | "departments.update" | "departments.delete" | "activity_logs.read" | "login_history.read")[];
         };
         PermissionResponse: {
             id: string;
             /** @enum {string} */
-            key: "dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "activity_logs.read" | "login_history.read";
+            key: "dashboard.read" | "users.read" | "users.create" | "users.update" | "users.delete" | "users.reset_password" | "users.assign_roles" | "roles.read" | "roles.create" | "roles.update" | "roles.delete" | "permissions.read" | "departments.read" | "departments.create" | "departments.update" | "departments.delete" | "activity_logs.read" | "login_history.read";
             module: string;
             action: string;
             description: string | null;
@@ -702,6 +801,7 @@ export interface operations {
                 search?: string;
                 status?: "ACTIVE" | "INACTIVE" | "LOCKED";
                 role_id?: string;
+                department_id?: string;
                 sort?: "created_at" | "email" | "last_name" | "last_login_at" | "status";
             };
             header?: never;
@@ -874,6 +974,120 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    DepartmentsController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+                order?: "asc" | "desc";
+                /** @description Searches code and name */
+                search?: string;
+                sort?: "name" | "code" | "created_at";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentPageResponse"];
+                };
+            };
+        };
+    };
+    DepartmentsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDepartmentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentResponse"];
+                };
+            };
+        };
+    };
+    DepartmentsController_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentResponse"];
+                };
+            };
+        };
+    };
+    DepartmentsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    DepartmentsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateDepartmentDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepartmentResponse"];
+                };
             };
         };
     };
@@ -1103,6 +1317,23 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DashboardResponse"];
                 };
+            };
+        };
+    };
+    HealthController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

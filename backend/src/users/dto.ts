@@ -12,6 +12,7 @@ import {
   IsString,
   IsUUID,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 import { SortOrderDto } from '../common/pagination.js';
 import { UserStatus } from '../generated/prisma/enums.js';
@@ -31,6 +32,9 @@ export class ListUsersQueryDto extends SortOrderDto {
 
   @ApiPropertyOptional() @IsOptional() @IsUUID()
   role_id?: string;
+
+  @ApiPropertyOptional() @IsOptional() @IsUUID()
+  department_id?: string;
 
   @ApiPropertyOptional({ enum: USER_SORT_FIELDS }) @IsOptional() @IsIn(USER_SORT_FIELDS)
   sort?: (typeof USER_SORT_FIELDS)[number];
@@ -57,6 +61,9 @@ export class CreateUserDto extends UserProfileFields {
   @ApiPropertyOptional({ type: [String], description: 'Roles to assign; the account is invited by email' })
   @IsOptional() @IsArray() @ArrayMaxSize(20) @ArrayUnique() @IsUUID('all', { each: true })
   role_ids?: string[];
+
+  @ApiPropertyOptional() @IsOptional() @IsUUID()
+  department_id?: string;
 }
 
 export class UpdateUserDto {
@@ -68,6 +75,11 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional() @IsOptional() @Transform(trim) @IsString() @IsNotEmpty() @MaxLength(100)
   last_name?: string;
+
+  // null detaches the account from its department; absent leaves it as it is.
+  @ApiPropertyOptional({ nullable: true, type: String })
+  @IsOptional() @ValidateIf((_dto, value) => value !== null) @IsUUID()
+  department_id?: string | null;
 }
 
 export class UpdateStatusDto {
