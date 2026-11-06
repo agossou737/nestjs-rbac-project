@@ -23,7 +23,8 @@
   },
   "entities": {
     "user": "Compte",
-    "role": "Rôle"
+    "role": "Rôle",
+    "department": "Département"
   },
   "actions": {
     "user": {
@@ -47,6 +48,11 @@
       "login_blocked": "a été bloqué depuis une adresse IP après plusieurs échecs",
       "account_locked": "a vu son compte verrouillé après une attaque distribuée",
       "password_reset": "a choisi un nouveau mot de passe"
+    },
+    "department": {
+      "created": "a créé un département",
+      "updated": "a modifié un département",
+      "deleted": "a supprimé un département"
     }
   },
   "meta": {
@@ -62,6 +68,7 @@
     "source_id": "Identifiant d'origine",
     "reason": "Motif",
     "scope": "Portée",
-    "minutes": "Minutes"
+    "minutes": "Minutes",
+    "code": "Code"
   }
 }

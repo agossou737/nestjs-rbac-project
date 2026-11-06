@@ -34,7 +34,7 @@ export function PermissionMatrix({ catalogue, value, onChange, readOnly }: Permi
     const count = module.permissions.filter((p) => selected.has(p.key)).length;
     return count === 0 ? false : count === module.permissions.length ? true : "indeterminate";
   };
-  // permissions.modules.dashboard | users | roles | permissions | activity_logs | login_history
+  // permissions.modules.dashboard | users | departments | roles | permissions | activity_logs | login_history
   const moduleLabel = (module: string) => t(`permissions.modules.${module}`, { defaultValue: module });
   // permissions.actions.read | create | update | delete | reset_password | assign_roles
   const actionLabel = (action: string) => t(`permissions.actions.${action}`, { defaultValue: action });

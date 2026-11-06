@@ -14,6 +14,7 @@
     "roles": "Rôles",
     "permissions": "Permissions",
     "activity_logs": "Journal d'activité",
-    "login_history": "Historique des connexions"
+    "login_history": "Historique des connexions",
+    "departments": "Départements"
   }
 }

@@ -52,7 +52,7 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => {
-                  // nav.items.dashboard | users | roles | permissions | activity_logs | login_history
+                  // nav.items.dashboard | users | departments | roles | permissions | activity_logs | login_history
                   const label = t(`nav.items.${item.key}`);
                   return (
                     <SidebarMenuItem key={item.key}>

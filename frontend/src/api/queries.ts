@@ -3,11 +3,13 @@ import {
   activityLogsApi,
   authApi,
   dashboardApi,
+  departmentsApi,
   loginHistoryApi,
   permissionsApi,
   rolesApi,
   usersApi,
   type ActivityLogQuery,
+  type DepartmentListQuery,
   type LoginHistoryQuery,
   type RoleListQuery,
   type UserListQuery,
@@ -21,6 +23,7 @@ export const queryKeys = {
   roles: (query?: RoleListQuery) => ["roles", "list", query] as const,
   role: (id: string) => ["roles", "detail", id] as const,
   permissions: ["permissions"] as const,
+  departments: (query?: DepartmentListQuery) => ["departments", "list", query] as const,
   activityLogs: (query: ActivityLogQuery) => ["activity-logs", query] as const,
   loginHistory: (query: LoginHistoryQuery) => ["login-history", query] as const,
   dashboard: ["dashboard"] as const,
@@ -35,6 +38,9 @@ export const useUser = (id: string) => useQuery({ queryKey: queryKeys.user(id), 
 export const useRoles = (query: RoleListQuery) =>
   useQuery({ queryKey: queryKeys.roles(query), queryFn: () => rolesApi.list(query), placeholderData: keepPreviousData });
 export const useRole = (id: string) => useQuery({ queryKey: queryKeys.role(id), queryFn: () => rolesApi.get(id) });
+
+export const useDepartments = (query: DepartmentListQuery, enabled = true) =>
+  useQuery({ queryKey: queryKeys.departments(query), queryFn: () => departmentsApi.list(query), placeholderData: keepPreviousData, enabled });
 
 // The catalogue changes only with a deployment: cached for the session.
 export const usePermissions = () =>
@@ -57,7 +63,9 @@ function useInvalidating<A extends unknown[], R>(fn: (...args: A) => Promise<R>,
   });
 }
 
-const afterUserWrite = [["users"], ["roles"], ["dashboard"], ["activity-logs"]];
+// Department counts move when an account changes department, and the reverse.
+const afterUserWrite = [["users"], ["roles"], ["departments"], ["dashboard"], ["activity-logs"]];
+const afterDepartmentWrite = [["departments"], ["users"], ["activity-logs"]];
 const afterRoleWrite = [["roles"], ["users"], ["dashboard"], ["activity-logs"], ["auth", "me"]];
 
 export const useCreateUser = () => useInvalidating(usersApi.create, afterUserWrite);
@@ -66,6 +74,10 @@ export const useSetUserStatus = () => useInvalidating(usersApi.setStatus, afterU
 export const useSetUserRoles = () => useInvalidating(usersApi.setRoles, afterUserWrite);
 export const useResetUserPassword = () => useInvalidating(usersApi.resetPassword, [["activity-logs"]]);
 export const useDeleteUser = () => useInvalidating(usersApi.remove, afterUserWrite);
+
+export const useCreateDepartment = () => useInvalidating(departmentsApi.create, afterDepartmentWrite);
+export const useUpdateDepartment = () => useInvalidating(departmentsApi.update, afterDepartmentWrite);
+export const useDeleteDepartment = () => useInvalidating(departmentsApi.remove, afterDepartmentWrite);
 
 export const useCreateRole = () => useInvalidating(rolesApi.create, afterRoleWrite);
 export const useDuplicateRole = () => useInvalidating(rolesApi.duplicate, afterRoleWrite);

@@ -9,6 +9,7 @@ export default defineConfig({
   server: {
     port: 5180,
     strictPort: true,
-    proxy: { '/api': 'http://localhost:3000' },
+    // API_PROXY_TARGET (read by Node, never sent to the browser) when the API cannot use port 3000.
+    proxy: { '/api': process.env.API_PROXY_TARGET ?? 'http://localhost:3000' },
   },
 })

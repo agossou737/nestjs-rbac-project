@@ -14,7 +14,9 @@
     "email": "Adresse e-mail",
     "first_name": "Prénom",
     "last_name": "Nom",
-    "roles_optional": "Rôles (facultatif)"
+    "roles_optional": "Rôles (facultatif)",
+    "department": "Département (facultatif)",
+    "no_department": "Aucun département"
   },
   "filters": {
     "search": "Rechercher",
@@ -22,14 +24,17 @@
     "status": "Statut",
     "all_statuses": "Tous les statuts",
     "role": "Rôle",
-    "all_roles": "Tous les rôles"
+    "all_roles": "Tous les rôles",
+    "department": "Département",
+    "all_departments": "Tous les départements"
   },
   "columns": {
     "name": "Utilisateur",
     "status": "Statut",
     "roles": "Rôles",
     "last_login": "Dernière connexion",
-    "created": "Créé le"
+    "created": "Créé le",
+    "department": "Département"
   },
   "empty": {
     "title": "Aucun compte pour l'instant",
@@ -96,5 +101,6 @@
     "activity_empty_description": "Les modifications apportées à ce compte apparaîtront ici.",
     "logins_empty_title": "Aucune connexion",
     "logins_empty_description": "Ce compte ne s'est encore jamais connecté."
-  }
+  },
+  "no_department": "Aucun"
 }

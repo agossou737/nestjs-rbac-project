@@ -1,15 +1,18 @@
-import type { UseFormReturn } from "react-hook-form";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { fieldAttrs, guard, sanitize } from "@/lib/inputs";
+import { DepartmentSelect } from "./department-select";
 
 // Same bounds as the API DTOs (users/dto.ts).
 export const profileSchema = z.object({
   email: z.string().email({ message: "errors.format.email" }).max(254, { message: "errors.too_long" }),
   first_name: z.string().trim().min(1, { message: "errors.required" }).max(100, { message: "errors.too_long" }),
   last_name: z.string().trim().min(1, { message: "errors.required" }).max(100, { message: "errors.too_long" }),
+  // "" means no department; the forms send undefined (creation) or null (edition) for it.
+  department_id: z.string(),
 });
 export type ProfileValues = z.infer<typeof profileSchema>;
 
@@ -68,6 +71,14 @@ export function UserProfileFields({ form, disabled }: { form: UseFormReturn<Prof
           aria-describedby={errors.email ? "email-error" : undefined}
         />
         {errors.email?.message && <FieldError id="email-error">{t(errors.email.message)}</FieldError>}
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="department_id">{t("users.fields.department")}</FieldLabel>
+        <Controller
+          control={form.control}
+          name="department_id"
+          render={({ field }) => <DepartmentSelect id="department_id" value={field.value} onChange={field.onChange} disabled={disabled} />}
+        />
       </Field>
     </>
   );

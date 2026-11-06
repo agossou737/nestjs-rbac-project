@@ -44,6 +44,7 @@ test.describe.serial("signed-in screens", () => {
     ["/dashboard", /tableau de bord/i],
     ["/users", /utilisateurs/i],
     ["/users?search=zzz-no-match", /utilisateurs/i],
+    ["/departments", /départements/i],
     ["/roles", /rôles/i],
     ["/permissions", /permissions/i],
     ["/activity-logs", /journal d'activité/i],

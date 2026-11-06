@@ -1,0 +1,57 @@
+{
+  "title": "Départements",
+  "description": "Les unités de l'organisation et les comptes qui y sont rattachés.",
+  "count_one": "{{formatted}} département",
+  "count_other": "{{formatted}} départements",
+  "search": "Rechercher un département",
+  "search_placeholder": "Code ou nom",
+  "create": "Créer un département",
+  "edit": "Modifier le département {{code}}",
+  "more_actions": "Autres actions pour {{code}}",
+  "delete": "Supprimer",
+  "delete_blocked": "Encore des membres : rattachez-les ailleurs d'abord",
+  "deleted": "Département {{code}} supprimé",
+  "confirm_title": "Supprimer le département {{code}} ?",
+  "confirm_description": "Le département disparaîtra des listes et son code pourra être réutilisé. Son historique reste dans le journal d'activité.",
+  "no_manager": "Aucun responsable",
+  "members_one": "{{formatted}} membre",
+  "members_other": "{{formatted}} membres",
+  "empty_title": "Aucun département pour l'instant",
+  "empty_description": "Créez les unités de votre organisation, puis rattachez-y les comptes depuis leur fiche.",
+  "empty_filtered_title": "Aucun département ne correspond à cette recherche",
+  "empty_filtered_description": "Modifiez la recherche pour revoir tous les départements.",
+  "columns": {
+    "name": "Nom",
+    "manager": "Responsable",
+    "members": "Membres"
+  },
+  "fields": {
+    "code": "Code",
+    "code_short": "Code",
+    "name": "Nom",
+    "description": "Description (facultatif)",
+    "manager": "Responsable (facultatif)"
+  },
+  "form": {
+    "create_title": "Créer un département",
+    "edit_title": "Modifier le département",
+    "description": "Le code court identifie le département dans les listes, par exemple DSI ou RH.",
+    "code_help": "2 à 20 lettres majuscules, chiffres, tiret ou tiret bas.",
+    "manager_help": "Un compte actif. Recherchez par nom ou par e-mail.",
+    "manager_none": "Aucun responsable",
+    "manager_search": "Nom ou e-mail",
+    "manager_loading": "Recherche…",
+    "manager_no_result": "Aucun compte actif ne correspond",
+    "manager_clear": "Retirer le responsable",
+    "create_submit": "Créer le département",
+    "created": "Département {{code}} créé",
+    "updated": "Département {{code}} enregistré"
+  },
+  "errors": {
+    "code_format": "Le code doit contenir 2 à 20 lettres majuscules, chiffres, tirets ou tirets bas.",
+    "name_min": "Le nom doit contenir au moins 2 caractères.",
+    "taken": "Un département utilise déjà ce code ou ce nom.",
+    "manager_gone": "Le responsable choisi n'existe plus. Choisissez un autre compte.",
+    "has_members": "Ce département a encore des membres : rattachez-les à un autre département avant de le supprimer."
+  }
+}

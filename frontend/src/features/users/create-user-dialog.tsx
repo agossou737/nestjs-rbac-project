@@ -18,7 +18,7 @@ import { profileSchema, UserProfileFields } from "./user-profile-fields";
 
 const schema = profileSchema.extend({ role_ids: z.array(z.string()).optional() });
 type Values = z.infer<typeof schema>;
-const EMPTY: Values = { email: "", first_name: "", last_name: "", role_ids: [] };
+const EMPTY: Values = { email: "", first_name: "", last_name: "", department_id: "", role_ids: [] };
 
 export function CreateUserDialog() {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ export function CreateUserDialog() {
   const onSubmit = form.handleSubmit(async (values) => {
     setServerError(null);
     try {
-      const user = await create.mutateAsync([values]);
+      const user = await create.mutateAsync([{ ...values, department_id: values.department_id || undefined }]);
       toast.success(t("users.create.done", { email: user.email }));
       setOpen(false);
       form.reset(EMPTY);

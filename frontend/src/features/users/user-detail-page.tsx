@@ -114,12 +114,15 @@ function ProfileTab({ user }: { user: User }) {
     resolver: zodResolver(profileSchema),
     mode: "onBlur",
     reValidateMode: "onChange",
-    values: { email: user.email, first_name: user.first_name, last_name: user.last_name },
+    values: { email: user.email, first_name: user.first_name, last_name: user.last_name, department_id: user.department?.id ?? "" },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
-      await update.mutateAsync([user.id, { email: values.email, first_name: values.first_name, last_name: values.last_name }]);
+      await update.mutateAsync([
+        user.id,
+        { email: values.email, first_name: values.first_name, last_name: values.last_name, department_id: values.department_id || null },
+      ]);
       toast.success(t("users.detail.saved"));
     } catch (error) {
       if (!applyFieldErrors(error, form.setError, ["email", "first_name", "last_name"])) {

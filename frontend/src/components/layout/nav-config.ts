@@ -1,4 +1,4 @@
-import { History, KeyRound, LayoutDashboard, ScrollText, ShieldCheck, Users, type LucideIcon } from "lucide-react";
+import { Building2, History, KeyRound, LayoutDashboard, ScrollText, ShieldCheck, Users, type LucideIcon } from "lucide-react";
 
 export type NavItem = {
   key: string;
@@ -20,6 +20,7 @@ export const navGroups: NavGroup[] = [
     key: "access",
     items: [
       { key: "users", to: "/users", icon: Users, permission: "users.read" },
+      { key: "departments", to: "/departments", icon: Building2, permission: "departments.read" },
       { key: "roles", to: "/roles", icon: ShieldCheck, permission: "roles.read" },
       { key: "permissions", to: "/permissions", icon: KeyRound, permission: "permissions.read" },
     ],

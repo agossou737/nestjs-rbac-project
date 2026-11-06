@@ -56,7 +56,7 @@ test("an invited Viewer sets a password from the email and only sees what the ro
   await expect(viewer.getByRole("heading", { level: 1, name: "Tableau de bord" })).toBeVisible();
 
   const nav = viewer.locator("[data-sidebar='content']");
-  for (const allowed of ["Tableau de bord", "Utilisateurs", "Rôles", "Permissions"]) {
+  for (const allowed of ["Tableau de bord", "Utilisateurs", "Départements", "Rôles", "Permissions"]) {
     await expect(nav.getByRole("link", { name: allowed })).toBeVisible();
   }
   await expect(nav.getByRole("link", { name: "Journal d'activité" })).toHaveCount(0);

@@ -20,11 +20,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatDateTime, formatNumber } from "@/lib/format";
 import { useListParams } from "@/lib/use-list-params";
 import { CreateUserDialog } from "./create-user-dialog";
+import { DepartmentSelect } from "./department-select";
 import { UserActions } from "./user-actions";
 import { UserStatusBadge } from "./user-status-badge";
 
 const PAGE_SIZE = 20;
-const FILTERS = ["search", "status", "role_id"] as const;
+const FILTERS = ["search", "status", "role_id", "department_id"] as const;
 const STATUSES: UserStatus[] = ["ACTIVE", "INACTIVE", "LOCKED"];
 const ALL = "all";
 type UserSort = "created_at" | "email" | "last_name" | "last_login_at" | "status";
@@ -42,6 +43,7 @@ export default function UsersPage() {
     search: list.filters.search,
     status,
     role_id: list.filters.role_id,
+    department_id: list.filters.department_id,
     sort,
     order: list.order,
   });
@@ -110,6 +112,15 @@ export default function UsersPage() {
             </SelectContent>
           </Select>
         </div>
+        <div className="w-full space-y-1 sm:w-56">
+          <Label htmlFor="user-department">{t("users.filters.department")}</Label>
+          <DepartmentSelect
+            id="user-department"
+            value={list.filters.department_id ?? ""}
+            onChange={(value) => update({ department_id: value || undefined })}
+            noneLabel={t("users.filters.all_departments")}
+          />
+        </div>
       </div>
 
       {query.isPending ? (
@@ -151,6 +162,7 @@ export default function UsersPage() {
                     {t("users.columns.status")}
                   </SortableHead>
                   <TableHead>{t("users.columns.roles")}</TableHead>
+                  <TableHead>{t("users.columns.department")}</TableHead>
                   <SortableHead field="last_login_at" sort={list.sort} order={list.order} onSort={list.toggleSort}>
                     {t("users.columns.last_login")}
                   </SortableHead>
@@ -174,6 +186,9 @@ export default function UsersPage() {
                     <TableCell className="max-w-56 truncate text-muted-foreground">
                       {user.roles.map((role) => role.name).join(", ") || t("users.no_role")}
                     </TableCell>
+                    <TableCell className="font-mono text-xs" title={user.department?.name}>
+                      {user.department?.code ?? <span className="font-sans text-muted-foreground">{t("users.no_department")}</span>}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">{formatDateTime(user.last_login_at) || t("users.never")}</TableCell>
                     <TableCell className="text-muted-foreground">{formatDateTime(user.created_at)}</TableCell>
                     <TableCell className="text-right">
@@ -195,6 +210,7 @@ export default function UsersPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <UserStatusBadge status={user.status} />
                         <span className="text-xs text-muted-foreground">{user.roles.map((role) => role.name).join(", ") || t("users.no_role")}</span>
+                        {user.department && <span className="font-mono text-xs">{user.department.code}</span>}
                       </div>
                     </div>
                     <UserActions user={user} />

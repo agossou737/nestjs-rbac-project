@@ -7,6 +7,7 @@ export function useActionLabel() {
   const { t } = useTranslation();
   // activity.actions.user.created | user.updated | user.status_changed | user.deleted | user.password_reset_requested
   // | user.roles_changed | role.created | role.duplicated | role.updated | role.permissions_changed | role.deleted
+  // | department.created | department.updated | department.deleted
   // | auth.logout | auth.session_revoked | auth.login_blocked | auth.account_locked | auth.password_reset
   return (action: string) => t(`activity.actions.${action}`, { defaultValue: action });
 }

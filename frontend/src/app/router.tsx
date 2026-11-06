@@ -50,6 +50,7 @@ export const router = createBrowserRouter([
           screen("/dashboard", "dashboard.read", () => import("@/features/dashboard/dashboard-page")),
           screen("/users", "users.read", () => import("@/features/users/users-page")),
           screen("/users/:id", "users.read", () => import("@/features/users/user-detail-page")),
+          screen("/departments", "departments.read", () => import("@/features/departments/departments-page")),
           screen("/roles", "roles.read", () => import("@/features/roles/roles-page")),
           screen("/roles/:id", "roles.read", () => import("@/features/roles/role-detail-page")),
           screen("/permissions", "permissions.read", () => import("@/features/permissions/permissions-page")),

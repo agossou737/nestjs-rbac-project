@@ -11,6 +11,7 @@ export type PermissionKey = S["PermissionResponse"]["key"];
 export type ActivityLog = S["ActivityLogResponse"];
 export type LoginAttempt = S["LoginHistoryResponse"];
 export type Dashboard = S["DashboardResponse"];
+export type Department = S["DepartmentResponse"];
 export type Page<T> = { items: T[]; total: number; page: number; page_size: number };
 
 type Person = { first_name: string; last_name: string };
@@ -22,7 +23,7 @@ export const initials = (person: Person) => `${person.first_name[0] ?? ""}${pers
 export type PermissionModule = { module: string; permissions: Permission[] };
 
 // Modules in the order of the navigation; a module added later goes last rather than disappearing.
-const MODULE_ORDER = ["dashboard", "users", "roles", "permissions", "activity_logs", "login_history"];
+const MODULE_ORDER = ["dashboard", "users", "departments", "roles", "permissions", "activity_logs", "login_history"];
 const rank = (module: string) => (MODULE_ORDER.indexOf(module) + 1 || MODULE_ORDER.length + 1);
 
 // The matrix rows: one module per row, its actions as columns.

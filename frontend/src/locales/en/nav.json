@@ -14,6 +14,7 @@
     "roles": "[en] Rôles",
     "permissions": "[en] Permissions",
     "activity_logs": "[en] Journal d'activité",
-    "login_history": "[en] Historique des connexions"
+    "login_history": "[en] Historique des connexions",
+    "departments": "[en] Départements"
   }
 }

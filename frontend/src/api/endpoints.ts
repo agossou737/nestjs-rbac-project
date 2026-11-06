@@ -8,6 +8,7 @@ export type UserListQuery = Query<"UsersController_list">;
 export type RoleListQuery = Query<"RolesController_list">;
 export type ActivityLogQuery = Query<"ActivityLogsController_list">;
 export type LoginHistoryQuery = Query<"LoginHistoryController_list">;
+export type DepartmentListQuery = Query<"DepartmentsController_list">;
 export type UserStatus = S["UserResponse"]["status"];
 
 const data = <T,>(promise: Promise<{ data: T }>) => promise.then((res) => res.data);
@@ -29,6 +30,14 @@ export const usersApi = {
   setRoles: (id: string, roleIds: string[]) => data(http.put<S["UserResponse"]>(`/users/${id}/roles`, { role_ids: roleIds })),
   resetPassword: (id: string) => http.post(`/users/${id}/reset-password`).then(() => undefined),
   remove: (id: string) => http.delete(`/users/${id}`).then(() => undefined),
+};
+
+export const departmentsApi = {
+  list: (params: DepartmentListQuery) => data(http.get<S["DepartmentPageResponse"]>("/departments", { params })),
+  get: (id: string) => data(http.get<S["DepartmentResponse"]>(`/departments/${id}`)),
+  create: (body: S["CreateDepartmentDto"]) => data(http.post<S["DepartmentResponse"]>("/departments", body)),
+  update: (id: string, body: S["UpdateDepartmentDto"]) => data(http.patch<S["DepartmentResponse"]>(`/departments/${id}`, body)),
+  remove: (id: string) => http.delete(`/departments/${id}`).then(() => undefined),
 };
 
 export const rolesApi = {

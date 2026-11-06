@@ -33,6 +33,9 @@ const ACTIONS = [
   "role.updated",
   "role.permissions_changed",
   "role.deleted",
+  "department.created",
+  "department.updated",
+  "department.deleted",
   "auth.logout",
   "auth.password_reset",
   "auth.login_blocked",
@@ -88,6 +91,7 @@ export default function ActivityLogsPage() {
               <SelectItem value={ALL}>{t("activity.filters.all_entities")}</SelectItem>
               <SelectItem value="user">{t("activity.entities.user")}</SelectItem>
               <SelectItem value="role">{t("activity.entities.role")}</SelectItem>
+              <SelectItem value="department">{t("activity.entities.department")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -169,10 +173,10 @@ export default function ActivityLogsPage() {
 function Target({ log }: { log: ActivityLog }) {
   const { t } = useTranslation();
   const { can } = useSession();
-  // activity.entities.user | role
+  // activity.entities.user | role | department
   const type = t(`activity.entities.${log.entity_type}`, { defaultValue: log.entity_type });
   if (!log.entity_id) return <span className="text-sm text-muted-foreground">{type}</span>;
-  const href = log.entity_type === "user" && can("users.read") ? `/users/${log.entity_id}` : log.entity_type === "role" && can("roles.read") ? `/roles/${log.entity_id}` : null;
+  const href = log.entity_type === "user" && can("users.read") ? `/users/${log.entity_id}` : log.entity_type === "role" && can("roles.read") ? `/roles/${log.entity_id}` : log.entity_type === "department" && can("departments.read") ? "/departments" : null;
   return href && !log.action.endsWith(".deleted") ? (
     <Link to={href} className="inline-flex min-h-11 items-center sm:min-h-0 text-sm text-primary underline-offset-4 hover:underline">
       {type}
