@@ -1,4 +1,4 @@
-# Local stack: `docker compose up -d mysql mailpit` for development, `docker compose up -d --build` for the whole application.
+# Local stack: `docker compose up -d mysql mailpit redis` for development, `docker compose up -d --build` for the whole application.
 # Production images go through Harbor (ASIN rule); the base images are build arguments for that reason.
 name: access-manager
 
@@ -31,6 +31,21 @@ services:
       - "127.0.0.1:${MAILPIT_SMTP_PORT:-1026}:1025"
       - "127.0.0.1:${MAILPIT_UI_PORT:-8026}:8025"
 
+  # Job queue store (BullMQ): e-mails leave the request and are retried if the SMTP server fails.
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6381}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   # API: not published on the host, reachable only through the frontend's nginx on the same origin.
   backend:
     build:
@@ -43,6 +58,8 @@ services:
         condition: service_healthy
       mailpit:
         condition: service_started
+      redis:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -54,6 +71,7 @@ services:
       TRUST_PROXY: "1"
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      REDIS_URL: redis://redis:6379/0
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       MAIL_FROM: Access Manager <no-reply@access-manager.local>
@@ -79,3 +97,4 @@ services:
 
 volumes:
   mysql-data:
+  redis-data:

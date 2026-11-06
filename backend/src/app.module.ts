@@ -1,6 +1,8 @@
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { ActivityLogsModule } from './activity-logs/activity-logs.module.js';
@@ -8,11 +10,13 @@ import { AuthModule } from './auth/auth.module.js';
 import { JwtAuthGuard } from './auth/jwt-auth.guard.js';
 import { throttlerOptions } from './common/credential-rate-limit.js';
 import { loggerParams } from './common/logger.config.js';
+import { redisConnection } from './common/redis-connection.js';
 import { validateEnv } from './config/env.validation.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
 import { DepartmentsModule } from './departments/departments.module.js';
 import { HealthModule } from './health/health.module.js';
 import { LoginHistoryModule } from './login-history/login-history.module.js';
+import { NotificationsModule } from './notifications/notifications.module.js';
 import { PermissionsModule } from './permissions/permissions.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { PermissionsGuard } from './rbac/permissions.guard.js';
@@ -31,12 +35,18 @@ import { UsersModule } from './users/users.module.js';
     }),
     LoggerModule.forRootAsync({ inject: [ConfigService], useFactory: loggerParams }),
     ThrottlerModule.forRootAsync({ inject: [ConfigService], useFactory: throttlerOptions }),
+    EventEmitterModule.forRoot(),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({ connection: redisConnection(config.getOrThrow<string>('REDIS_URL')) }),
+    }),
     PrismaModule,
     RbacModule,
     ActivityLogsModule,
     AuthModule,
     UsersModule,
     DepartmentsModule,
+    NotificationsModule,
     RolesModule,
     PermissionsModule,
     LoginHistoryModule,

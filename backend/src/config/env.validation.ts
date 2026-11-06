@@ -70,6 +70,12 @@ export class EnvironmentVariables {
   @Transform(toBoolean) @IsBoolean()
   SMTP_REQUIRE_TLS: boolean = false;
 
+  @IsString() @IsNotEmpty()
+  REDIS_URL!: string;
+
+  @IsInt() @Min(10)
+  NOTIFICATION_RETRY_DELAY_MS: number = 30_000;
+
   @IsIn(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
   LOG_LEVEL: string = 'info';
 

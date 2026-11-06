@@ -125,18 +125,24 @@ export class AuthService {
 
   // Also used to invite a new account and for an administrator-requested reset: nobody ever sees a password.
   async issuePasswordReset(user: Pick<User, 'id' | 'email'>): Promise<void> {
-    const token = generateOpaqueToken();
-    await this.prisma.$transaction([
-      this.prisma.passwordResetToken.deleteMany({ where: { userId: user.id, usedAt: null } }),
-      this.prisma.passwordResetToken.create({
-        data: { userId: user.id, tokenHash: hashOpaqueToken(token), expiresAt: new Date(Date.now() + this.resetTtlMs) },
-      }),
-    ]);
-    const resetUrl = `${this.appUrl}/reset-password?token=${encodeURIComponent(token)}`;
+    const resetUrl = await this.createPasswordResetUrl(user.id);
     // Not awaited: the response time must not depend on whether a mail was sent.
     this.mail.sendPasswordReset(user.email, resetUrl).catch((error: Error) => {
       this.logger.error(`Password reset mail could not be sent: ${error.message}`);
     });
+  }
+
+  // A new single-use link; any earlier unused one stops working. The invitation job calls it at send time, so the token
+  // never sits in the job queue.
+  async createPasswordResetUrl(userId: string): Promise<string> {
+    const token = generateOpaqueToken();
+    await this.prisma.$transaction([
+      this.prisma.passwordResetToken.deleteMany({ where: { userId, usedAt: null } }),
+      this.prisma.passwordResetToken.create({
+        data: { userId, tokenHash: hashOpaqueToken(token), expiresAt: new Date(Date.now() + this.resetTtlMs) },
+      }),
+    ]);
+    return `${this.appUrl}/reset-password?token=${encodeURIComponent(token)}`;
   }
 
   async resetPassword(token: string, password: string, client: ClientInfo): Promise<void> {

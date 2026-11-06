@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ActivityLogService } from '../activity-logs/activity-log.service.js';
 import { AuthService } from '../auth/auth.service.js';
 import { generateOpaqueToken } from '../auth/opaque-token.js';
@@ -7,6 +8,7 @@ import { RefreshTokenService } from '../auth/refresh-token.service.js';
 import type { ActorContext } from '../common/actor.decorator.js';
 import { pageArgs, toPage } from '../common/pagination.js';
 import type { Prisma, UserStatus } from '../generated/prisma/client.js';
+import { USER_CREATED, UserCreatedEvent } from '../notifications/notifications.constants.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { DepartmentsService } from '../departments/departments.service.js';
 import { AccessPolicy } from '../rbac/access-policy.service.js';
@@ -39,6 +41,7 @@ export class UsersService {
     private readonly refreshTokens: RefreshTokenService,
     private readonly activity: ActivityLogService,
     private readonly departments: DepartmentsService,
+    private readonly events: EventEmitter2,
   ) {}
 
   async list(query: ListUsersQueryDto) {
@@ -89,13 +92,14 @@ export class UsersService {
       },
       include: withRoles,
     });
-    await this.auth.issuePasswordReset(user);
     await this.activity.recordFor(actor, {
       action: 'user.created',
       entityType: 'user',
       entityId: user.id,
       metadata: { roles: roles.map((role) => role.name) },
     });
+    // Announced, not handled here: NotificationsModule queues the invitation e-mail (with the roles) in the background.
+    this.events.emit(USER_CREATED, new UserCreatedEvent(user.id));
     return toUserDto(user);
   }
 

@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { seedDatabase } from '../prisma/seed-database.js';
 import { resetDatabase } from './utils/reset-database.js';
-import { DEFAULT_PASSWORD, SEED_ENV, createTestApp, createUser, loginAs, type TestApp } from './utils/test-app.js';
+import { DEFAULT_PASSWORD, SEED_ENV, createTestApp, createUser, eventually, loginAs, type TestApp } from './utils/test-app.js';
 
 describe('Users (e2e)', () => {
   let ctx: TestApp;
@@ -16,6 +16,7 @@ describe('Users (e2e)', () => {
     await resetDatabase(ctx.prisma);
     await seedDatabase(ctx.prisma, SEED_ENV);
     ctx.mail.sent.length = 0;
+    ctx.mail.invitations.length = 0;
   });
 
   afterAll(async () => {
@@ -82,7 +83,7 @@ describe('Users (e2e)', () => {
         .expect(201);
 
       expect(res.body).toMatchObject({ email: 'new.user@example.test', status: 'ACTIVE', roles: [{ name: 'Editor' }] });
-      expect(ctx.mail.sent.map((m) => m.to)).toEqual(['new.user@example.test']);
+      await eventually(() => ctx.mail.invitations.map((m) => m.to), (to) => to.includes('new.user@example.test'));
       const log = await ctx.prisma.activityLog.findFirstOrThrow({ where: { action: 'user.created' } });
       expect(log.entityId).toBe(res.body.id);
     });

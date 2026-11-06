@@ -8,6 +8,7 @@ const base = {
   SMTP_HOST: 'localhost',
   SMTP_PORT: '1025',
   MAIL_FROM: 'Access Manager <no-reply@example.test>',
+  REDIS_URL: 'redis://localhost:6379/0',
 };
 
 describe('validateEnv', () => {

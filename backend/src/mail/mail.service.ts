@@ -22,6 +22,25 @@ export class MailService {
     });
   }
 
+  async sendInvitation(to: string, details: { firstName: string; resetUrl: string; roles: string[] }): Promise<void> {
+    const roles = details.roles.length > 0 ? details.roles.map((role) => `  - ${role}`) : ['  Aucun rôle pour le moment : un administrateur vous en attribuera.'];
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: 'Votre compte Access Manager a été créé',
+      text: [
+        `Bonjour ${details.firstName},`,
+        '',
+        'Un compte Access Manager vient d’être créé pour vous. Vos rôles :',
+        ...roles,
+        '',
+        `Pour l'activer, choisissez votre mot de passe : ${details.resetUrl}`,
+        '',
+        `Le lien est valable ${this.resetTtlMinutes} minutes et ne fonctionne qu'une fois. S'il a expiré, utilisez « Mot de passe oublié » sur la page de connexion.`,
+      ].join('\n'),
+    });
+  }
+
   async sendPasswordReset(to: string, resetUrl: string): Promise<void> {
     await this.transporter.sendMail({
       from: this.from,

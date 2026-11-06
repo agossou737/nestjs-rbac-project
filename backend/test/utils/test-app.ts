@@ -8,11 +8,35 @@ import type { PrismaClient, UserStatus } from '../../src/generated/prisma/client
 import { MailService } from '../../src/mail/mail.service.js';
 import { PrismaService } from '../../src/prisma/prisma.service.js';
 
+export type SentInvitation = { to: string; firstName: string; resetUrl: string; roles: string[] };
+
 export class FakeMailService {
   readonly sent: { to: string; resetUrl: string }[] = [];
+  readonly invitations: SentInvitation[] = [];
+  // Number of upcoming invitation sends that fail, to exercise the queue's retries.
+  failNext = 0;
 
   async sendPasswordReset(to: string, resetUrl: string): Promise<void> {
     this.sent.push({ to, resetUrl });
+  }
+
+  async sendInvitation(to: string, details: Omit<SentInvitation, 'to'>): Promise<void> {
+    if (this.failNext > 0) {
+      this.failNext--;
+      throw new Error('SMTP server unavailable');
+    }
+    this.invitations.push({ to, ...details });
+  }
+}
+
+// Background jobs finish after the HTTP response: poll until the expectation holds.
+export async function eventually<T>(read: () => T | Promise<T>, accept: (value: T) => boolean, timeoutMs = 8000): Promise<T> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const value = await read();
+    if (accept(value)) return value;
+    if (Date.now() > deadline) throw new Error(`Condition not met within ${timeoutMs} ms: ${JSON.stringify(value)}`);
+    await new Promise((resolve) => setTimeout(resolve, 50));
   }
 }
 
