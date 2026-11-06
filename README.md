@@ -39,6 +39,7 @@ Chaque agent ne voit dans le menu que les modules que ses rôles lui ouvrent, et
 | | Swagger | 12 | Documentation interactive de l'API |
 | | Helmet, Throttler, pino | 8 / 6 / 10 | En-têtes de sécurité, limites de débit, journaux JSON |
 | Données | MySQL | 8.4 | Base de données |
+| | Redis + BullMQ | 7.4 / 6 | File de tâches (e-mails en arrière-plan, nouvelles tentatives) |
 | Tests | Vitest + Supertest | 4 / 7 | Tests de l'API |
 | | Playwright + axe | 1.64 | Parcours complets et accessibilité |
 | Exécution | Docker Compose, nginx, Node.js | 22 | Conteneurs, service de l'interface |
@@ -106,7 +107,7 @@ Les données restent dans le volume MySQL entre deux lancements. Pour tout effac
 Pour modifier le code avec rechargement automatique, il faut en plus **Node.js 22.18** ou plus récent et **npm 11**. Docker ne fait alors tourner que MySQL et Mailpit ; l'API et l'interface tournent sur votre machine :
 
 ```bash
-docker compose up -d mysql mailpit
+docker compose up -d mysql mailpit redis
 ```
 
 ```bash
@@ -145,7 +146,7 @@ Le [guide NestJS + React par la pratique](docs/guide-nestjs/README.md) explique,
 
 - **Authentification** : connexion, déconnexion, refresh avec rotation et détection de rejeu, mot de passe oublié et réinitialisation par lien à usage unique, `GET /api/v1/auth/me`, protection contre la force brute (blocage par couple compte + IP, verrouillage du compte en cas d'attaque distribuée, limites par IP).
 - **Tableau de bord** : comptes par statut, connexions des 14 derniers jours, comptes par rôle, dernières actions, tout calculé par l'API.
-- **Utilisateurs** : création par invitation (aucun mot de passe saisi ni vu par un administrateur), modification, statut (actif, inactif, verrouillé), suppression logique, envoi d'un lien de réinitialisation, multi-rôles, recherche, filtres, tri et pagination côté serveur, fiche à onglets (profil, rôles, activité, connexions).
+- **Utilisateurs** : création par invitation (e-mail envoyé en arrière-plan par une file BullMQ, avec la liste des rôles attribués ; aucun mot de passe saisi ni vu par un administrateur), modification, statut (actif, inactif, verrouillé), suppression logique, envoi d'un lien de réinitialisation, multi-rôles, recherche, filtres, tri et pagination côté serveur, fiche à onglets (profil, rôles, activité, connexions).
 - **Départements** : code, nom, responsable facultatif ; chaque compte peut être rattaché à un département ; suppression refusée tant qu'il a des membres.
 - **Rôles** : création, duplication, modification, suppression ; six rôles système protégés ; Super Administrator impossible à supprimer ni à modifier.
 - **Permissions** : catalogue au format `module.action`, matrice à cases à cocher par rôle (par permission, par module, tout, rien).
@@ -183,7 +184,7 @@ cp .env.example .env
 ```
 
 ```bash
-docker compose up -d mysql mailpit
+docker compose up -d mysql mailpit redis
 ```
 
 ```bash
@@ -243,6 +244,8 @@ Le premier écrit [docs/architecture/openapi.json](docs/architecture/openapi.jso
 | `GLOBAL_THROTTLE_LIMIT` | `300` | Limite par IP et par minute sur toutes les routes |
 | `PASSWORD_RESET_TTL_MINUTES` | `30` | Validité des liens d'invitation et de réinitialisation |
 | `SMTP_HOST`, `SMTP_PORT`, `MAIL_FROM` | | Serveur d'envoi |
+| `REDIS_URL` | | File de tâches BullMQ (`redis://hôte:port/base`) ; les tests utilisent une autre base (`/1`) |
+| `NOTIFICATION_RETRY_DELAY_MS` | `30000` | Premier délai avant une nouvelle tentative d'envoi d'e-mail (5 essais, délai doublé à chaque fois) |
 | `SMTP_SECURE` / `SMTP_REQUIRE_TLS` | `false` / `false` | TLS direct ou STARTTLS obligatoire ; `SMTP_REQUIRE_TLS=true` hors poste de développement |
 | `TRUST_PROXY` | `false` | `1` derrière un reverse proxy ; jamais `true` |
 | `SWAGGER_ENABLED` | `true` | `false` en production |

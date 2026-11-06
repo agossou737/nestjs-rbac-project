@@ -11,7 +11,7 @@ Lisez les chapitres dans l'ordre. Chaque chapitre indique les fichiers à ouvrir
 | 01 | [Carte du projet et cycle d'une requête](01-carte-du-projet.md) | Modules, injection de dépendances, guards, pipes, filtres : le trajet d'une requête de bout en bout |
 | 02 | [Ajouter une ressource CRUD de A à Z](02-crud-de-a-a-z.md) | Les départements : schéma Prisma et migration, permissions, DTO, service, contrôleur, tests e2e écrits d'abord |
 | 03 | [Côté React : du contrat OpenAPI à l'écran](03-react-du-contrat-a-l-ecran.md) | Types générés, couche réseau, TanStack Query et invalidations, liste et formulaire, combobox avec recherche serveur, tests Playwright |
-| 04 | Événements et files de tâches | À venir : `@nestjs/event-emitter`, BullMQ et Redis, e-mail d'invitation avec les rôles |
+| 04 | [Événements et files de tâches](04-evenements-et-files.md) | `@nestjs/event-emitter`, BullMQ et Redis, idempotence, nouvelles tentatives, tester l'asynchrone : l'e-mail d'invitation avec les rôles |
 | 05 | Notifications de changement de rôles | À venir : un second type de tâche, idempotence, nouvelles tentatives |
 
 ## Comment travailler avec ce guide

@@ -11,7 +11,7 @@
 | Frontend accessibilité | Playwright + axe | `cd frontend && npm run test:a11y` | 11 écrans, aucune violation sérieuse ou critique (WCAG 2.2 AA) |
 | Frontend parcours | Playwright | `cd frontend && npm run test:e2e` | 3 parcours de bout en bout sur l'API réelle et Mailpit, dont une console sans erreur ni violation CSP |
 
-Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose up -d mysql mailpit`) et les identifiants du Super Administrator du seed dans `E2E_EMAIL` et `E2E_PASSWORD`. Avec `PLAYWRIGHT_BASE_URL=http://localhost:8088`, elles s'exécutent contre la stack Docker complète (14 tests verts en phase 10).
+Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose up -d mysql mailpit redis`) et les identifiants du Super Administrator du seed dans `E2E_EMAIL` et `E2E_PASSWORD`. Avec `PLAYWRIGHT_BASE_URL=http://localhost:8088`, elles s'exécutent contre la stack Docker complète (14 tests verts en phase 10).
 
 ## Exigences du cahier des charges
 
@@ -32,6 +32,7 @@ Les suites Playwright demandent l'API sur le port 3000, Mailpit (`docker compose
 | Doublons (e-mail, nom de rôle) | `seed.e2e-spec.ts`, `users.e2e-spec.ts`, `roles.e2e-spec.ts` |
 | Utilisateurs : CRUD, statut, recherche, filtres, tri, pagination serveur | `users.e2e-spec.ts` |
 | Rôles : CRUD, duplication | `roles.e2e-spec.ts` |
+| Invitation par e-mail avec les rôles (événement, file, nouvelles tentatives, idempotence) | `notifications.e2e-spec.ts` ; `mail.service.spec.ts` |
 | Départements : CRUD, doublons, membres, responsable | `departments.e2e-spec.ts` ; `tests/e2e/departments.spec.ts` (interface) |
 | Journal d'activité immuable, sans secret, filtrable | `reporting.e2e-spec.ts` ; `hardening.e2e-spec.ts` |
 | Historique des connexions | `auth.e2e-spec.ts` : login history ; `reporting.e2e-spec.ts` |
