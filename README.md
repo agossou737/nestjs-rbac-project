@@ -200,7 +200,7 @@ cd backend && npm run db:deploy && npm run db:seed && npm run start:dev
 cd frontend && npm install && npm run dev
 ```
 
-L'interface tourne sur http://localhost:5180 et relaie `/api` vers l'API sur le port 3000. La documentation Swagger est sur http://localhost:3000/api/docs. La page `/design-system` (développement uniquement) présente les tokens et les composants.
+L'interface tourne sur http://localhost:5180 et relaie `/api` vers l'API sur le port 3000. Si ce port est déjà pris, lancez l'API avec `PORT=3100` et l'interface avec `API_PROXY_TARGET=http://localhost:3100`. La documentation Swagger est sur http://localhost:3000/api/docs. La page `/design-system` (développement uniquement) présente les tokens et les composants.
 
 Pour les tests e2e du backend, copiez `backend/.env.example` en `backend/.env.test` en visant la base `access_manager_test` (créée par le conteneur MySQL), avec `NODE_ENV=test`, `LOG_LEVEL=silent` et `GLOBAL_THROTTLE_LIMIT=10000`.
 
