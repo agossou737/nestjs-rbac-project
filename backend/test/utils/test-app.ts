@@ -9,10 +9,12 @@ import { MailService } from '../../src/mail/mail.service.js';
 import { PrismaService } from '../../src/prisma/prisma.service.js';
 
 export type SentInvitation = { to: string; firstName: string; resetUrl: string; roles: string[] };
+export type SentRolesChange = { to: string; firstName: string; added: string[]; removed: string[]; roles: string[] };
 
 export class FakeMailService {
   readonly sent: { to: string; resetUrl: string }[] = [];
   readonly invitations: SentInvitation[] = [];
+  readonly rolesChanges: SentRolesChange[] = [];
   // Number of upcoming invitation sends that fail, to exercise the queue's retries.
   failNext = 0;
 
@@ -26,6 +28,10 @@ export class FakeMailService {
       throw new Error('SMTP server unavailable');
     }
     this.invitations.push({ to, ...details });
+  }
+
+  async sendRolesChanged(to: string, details: Omit<SentRolesChange, 'to'>): Promise<void> {
+    this.rolesChanges.push({ to, ...details });
   }
 }
 

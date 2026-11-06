@@ -8,7 +8,8 @@ import { RefreshTokenService } from '../auth/refresh-token.service.js';
 import type { ActorContext } from '../common/actor.decorator.js';
 import { pageArgs, toPage } from '../common/pagination.js';
 import type { Prisma, UserStatus } from '../generated/prisma/client.js';
-import { USER_CREATED, UserCreatedEvent } from '../notifications/notifications.constants.js';
+import { randomUUID } from 'node:crypto';
+import { USER_CREATED, USER_ROLES_CHANGED, UserCreatedEvent, UserRolesChangedEvent } from '../notifications/notifications.constants.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { DepartmentsService } from '../departments/departments.service.js';
 import { AccessPolicy } from '../rbac/access-policy.service.js';
@@ -183,6 +184,9 @@ export class UsersService {
       entityId: id,
       metadata: { added: added.map((roleId) => names.get(roleId)), removed: removed.map((roleId) => names.get(roleId)) },
     });
+    if (added.length > 0 || removed.length > 0) {
+      this.events.emit(USER_ROLES_CHANGED, new UserRolesChangedEvent(id, added, removed, randomUUID()));
+    }
     return toUserDto(user);
   }
 

@@ -46,4 +46,19 @@ describe('MailService', () => {
     await service.sendInvitation('kofi@example.test', { firstName: 'Kofi', resetUrl: 'https://x', roles: [] });
     expect((sendMail.mock.calls.at(-1)![0] as { text: string }).text).toMatch(/aucun rôle/i);
   });
+
+  it('lists only the sections that changed, and warns when no role is left', async () => {
+    const service = new MailService(config);
+    await service.sendRolesChanged('awa@example.test', { firstName: 'Awa', added: ['Editor'], removed: [], roles: ['Editor', 'Viewer'] });
+    const changed = (sendMail.mock.calls.at(-1)![0] as { subject: string; text: string });
+    expect(changed.subject).toMatch(/rôles/i);
+    expect(changed.text).toContain('Rôles ajoutés :\n  - Editor');
+    expect(changed.text).not.toContain('Rôles retirés');
+    expect(changed.text).toContain('Vos rôles aujourd’hui :\n  - Editor\n  - Viewer');
+
+    await service.sendRolesChanged('awa@example.test', { firstName: 'Awa', added: [], removed: ['Viewer'], roles: [] });
+    const emptied = (sendMail.mock.calls.at(-1)![0] as { text: string }).text;
+    expect(emptied).toContain('Rôles retirés :\n  - Viewer');
+    expect(emptied).toMatch(/plus aucun rôle/);
+  });
 });

@@ -41,6 +41,27 @@ export class MailService {
     });
   }
 
+  async sendRolesChanged(to: string, details: { firstName: string; added: string[]; removed: string[]; roles: string[] }): Promise<void> {
+    const list = (roles: string[]) => roles.map((role) => `  - ${role}`);
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: 'Vos rôles Access Manager ont changé',
+      text: [
+        `Bonjour ${details.firstName},`,
+        '',
+        'Un administrateur a modifié vos rôles dans Access Manager.',
+        ...(details.added.length > 0 ? ['', 'Rôles ajoutés :', ...list(details.added)] : []),
+        ...(details.removed.length > 0 ? ['', 'Rôles retirés :', ...list(details.removed)] : []),
+        '',
+        details.roles.length > 0 ? 'Vos rôles aujourd’hui :' : 'Vous n’avez plus aucun rôle : votre compte ne donne plus accès à aucun module.',
+        ...list(details.roles),
+        '',
+        'Les changements s’appliquent dès votre prochaine action dans l’application. Si ce changement vous surprend, contactez votre administrateur.',
+      ].join('\n'),
+    });
+  }
+
   async sendPasswordReset(to: string, resetUrl: string): Promise<void> {
     await this.transporter.sendMail({
       from: this.from,

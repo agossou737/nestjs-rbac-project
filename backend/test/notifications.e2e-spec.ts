@@ -30,6 +30,7 @@ describe('Account notifications (e2e)', () => {
     await resetDatabase(ctx.prisma);
     await seedDatabase(ctx.prisma, SEED_ENV);
     ctx.mail.invitations.length = 0;
+    ctx.mail.rolesChanges.length = 0;
     ctx.mail.failNext = 0;
   });
 
@@ -96,5 +97,62 @@ describe('Account notifications (e2e)', () => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     expect(ctx.mail.invitations).toHaveLength(1);
   });
-});
 
+  describe('roles change e-mail', () => {
+    const putRoles = async (auth: string, userId: string, roles: string[]) =>
+      http()
+        .put(`/api/v1/users/${userId}/roles`)
+        .set('Authorization', auth)
+        .send({ role_ids: await Promise.all(roles.map(roleId)) })
+        .expect(200);
+
+    it('tells the account what was added, what was removed, and what it now holds', async () => {
+      const { auth } = await loginAs(ctx, ['Manager']);
+      const target = await createUser(ctx.prisma, { email: 'moved@example.test', roleNames: ['Viewer'] });
+
+      await putRoles(auth, target.id, ['Editor']);
+
+      const [mail] = await eventually(() => ctx.mail.rolesChanges, (sent) => sent.length === 1);
+      expect(mail).toEqual({ to: 'moved@example.test', firstName: 'Test', added: ['Editor'], removed: ['Viewer'], roles: ['Editor'] });
+    });
+
+    it('sends nothing when the roles did not change', async () => {
+      const { auth } = await loginAs(ctx, ['Manager']);
+      const target = await createUser(ctx.prisma, { roleNames: ['Viewer'] });
+
+      await putRoles(auth, target.id, ['Viewer']);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      expect(ctx.mail.rolesChanges).toEqual([]);
+      expect(await queue.getJobCounts('waiting', 'active', 'completed', 'delayed')).toEqual({ waiting: 0, active: 0, completed: 0, delayed: 0 });
+    });
+
+    it('queues role ids only, and one job per change even for the same account', async () => {
+      const { auth } = await loginAs(ctx, ['Manager']);
+      const target = await createUser(ctx.prisma, { roleNames: ['Viewer'] });
+
+      await putRoles(auth, target.id, ['Viewer', 'Editor']);
+      await putRoles(auth, target.id, ['Editor']);
+
+      const mails = await eventually(() => ctx.mail.rolesChanges, (sent) => sent.length === 2);
+      expect(mails.map((m) => [m.added, m.removed])).toEqual(
+        expect.arrayContaining([
+          [['Editor'], []],
+          [[], ['Viewer']],
+        ]),
+      );
+      const jobs = await queue.getJobs(['completed']);
+      for (const job of jobs.filter((j) => j.name === 'roles-changed')) {
+        expect(Object.keys(job.data).sort()).toEqual(['addedRoleIds', 'removedRoleIds', 'userId']);
+        expect(JSON.stringify(job.data)).not.toMatch(/@|Editor|Viewer/);
+      }
+    });
+
+    it('stays silent for an account deactivated before the job runs', async () => {
+      const target = await createUser(ctx.prisma, { status: 'INACTIVE', roleNames: ['Viewer'] });
+      const job = await queue.add('roles-changed', { userId: target.id, addedRoleIds: [await roleId('Editor')], removedRoleIds: [] });
+
+      await eventually(() => job.getState(), (state) => state === 'completed');
+      expect(ctx.mail.rolesChanges).toEqual([]);
+    });
+  });
+});
