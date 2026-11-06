@@ -119,6 +119,10 @@ cd frontend && npm install && npm run dev
 
 Avant la première commande `backend`, renseignez `backend/.env` (mot de passe MySQL, secret JWT, compte administrateur) : le détail est dans [Développement local](#développement-local). L'interface est alors sur **http://localhost:5180** et la documentation de l'API sur **http://localhost:3000/api/docs**.
 
+## Apprendre avec ce projet
+
+Le [guide NestJS + React par la pratique](docs/guide-nestjs/README.md) explique, chapitre par chapitre, comment le code est construit et comment y ajouter des fonctionnalités.
+
 ## Sommaire
 
 0. [Prise en main](#prise-en-main)
@@ -142,6 +146,7 @@ Avant la première commande `backend`, renseignez `backend/.env` (mot de passe M
 - **Authentification** : connexion, déconnexion, refresh avec rotation et détection de rejeu, mot de passe oublié et réinitialisation par lien à usage unique, `GET /api/v1/auth/me`, protection contre la force brute (blocage par couple compte + IP, verrouillage du compte en cas d'attaque distribuée, limites par IP).
 - **Tableau de bord** : comptes par statut, connexions des 14 derniers jours, comptes par rôle, dernières actions, tout calculé par l'API.
 - **Utilisateurs** : création par invitation (aucun mot de passe saisi ni vu par un administrateur), modification, statut (actif, inactif, verrouillé), suppression logique, envoi d'un lien de réinitialisation, multi-rôles, recherche, filtres, tri et pagination côté serveur, fiche à onglets (profil, rôles, activité, connexions).
+- **Départements** : code, nom, responsable facultatif ; chaque compte peut être rattaché à un département ; suppression refusée tant qu'il a des membres.
 - **Rôles** : création, duplication, modification, suppression ; six rôles système protégés ; Super Administrator impossible à supprimer ni à modifier.
 - **Permissions** : catalogue au format `module.action`, matrice à cases à cocher par rôle (par permission, par module, tout, rien).
 - **Journal d'activité** immuable et filtrable, sans aucun secret ; **historique des connexions** filtrable.
@@ -281,6 +286,10 @@ Un compte reçoit un ou plusieurs rôles ; ses permissions sont l'union de celle
 | `roles.update` | x | x | | | | |
 | `roles.delete` | x | | | | | |
 | `permissions.read` | x | x | x | | x | x |
+| `departments.read` | x | x | x | x | x | x |
+| `departments.create` | x | x | | | | |
+| `departments.update` | x | x | | | | |
+| `departments.delete` | x | x | | | | |
 | `activity_logs.read` | x | x | | | | x |
 | `login_history.read` | x | x | | | | x |
 
@@ -321,6 +330,7 @@ Toutes les routes sont sous `/api/v1`. Champs JSON en snake_case, dates ISO 8601
 |---|---|
 | Authentification | `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`, `POST /auth/forgot-password`, `POST /auth/reset-password` |
 | Utilisateurs | `GET /users`, `GET /users/:id`, `POST /users`, `PATCH /users/:id`, `PATCH /users/:id/status`, `PUT /users/:id/roles`, `POST /users/:id/reset-password`, `DELETE /users/:id` |
+| Départements | `GET /departments`, `GET /departments/:id`, `POST /departments`, `PATCH /departments/:id`, `DELETE /departments/:id` |
 | Rôles | `GET /roles`, `GET /roles/:id`, `POST /roles`, `POST /roles/:id/duplicate`, `PATCH /roles/:id`, `PUT /roles/:id/permissions`, `DELETE /roles/:id` |
 | Lecture | `GET /permissions`, `GET /activity-logs`, `GET /login-history`, `GET /dashboard` |
 | Exploitation | `GET /health` (public : `{ "status": "ok" }` ou 503) |
